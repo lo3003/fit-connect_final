@@ -1,0 +1,708 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  --primary-color: #2ecc71;
+  --primary-hover: #27ae60;
+  --secondary-color: #eafaf1;
+  --secondary-hover: #d8f5e3;
+  --background-color: #f7f8fa;
+  --card-background: #ffffff;
+  --text-dark: #2c3e50;
+  --text-light: #8j8d94;
+  --border-color: #e4e7eb;
+  --error-color: #e74c3c;
+  --error-background: #fbeae5;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+body {
+  margin: 0;
+  background-color: var(--background-color);
+  color: var(--text-dark);
+}
+
+* { box-sizing: border-box; }
+
+.app-container {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background-color: var(--card-background);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 450px) {
+  .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
+}
+
+.screen {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+h1 { font-size: 28px; text-align: center; margin: 0; }
+h2 { font-size: 24px; text-align: center; margin: 0; }
+p { text-align: center; color: var(--text-light); margin: 8px 0 24px 0; }
+.content-centered {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.button-group {
+  margin-top: auto;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+button {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+button:hover { background-color: var(--primary-hover); }
+button:active { transform: scale(0.98); }
+button:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+button.secondary {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+button.secondary:hover { background-color: var(--secondary-hover); }
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+input, select {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--secondary-color);
+}
+
+.auth-toggle { font-size: 14px; margin-top: 16px; }
+.auth-toggle a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
+.back-link { color: var(--text-dark); text-decoration: none; font-weight: 500; align-self: flex-start; margin-bottom: 20px; }
+.form-options { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-top: -8px; margin-bottom: 20px; }
+.checkbox-container { display: flex; align-items: center; cursor: pointer; color: var(--text-dark); }
+.checkbox-container input { width: 16px; height: 16px; margin-right: 8px; accent-color: var(--primary-color); }
+.error-message { color: var(--error-color); background-color: var(--error-background); border: 1px solid var(--error-color); padding: 10px; border-radius: var(--border-radius); text-align: center; font-size: 14px; margin-bottom: 16px; }
+
+/* --- Styles du Tableau de Bord --- */
+.dashboard-layout { display: flex; flex-direction: column; height: 100vh; background-color: var(--background-color); }
+.dashboard-content { flex-grow: 1; overflow-y: auto; }
+.loading-fullscreen, .loading-text { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light); }
+.loading-fullscreen { height: 100vh; }
+.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0; }
+.bottom-nav button { background: none; border: none; color: var(--text-light); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; padding: 4px 12px; border-radius: var(--border-radius); flex-grow: 1; }
+.bottom-nav button.active { color: var(--primary-color); }
+.bottom-nav button.active svg { fill: var(--primary-color); }
+.bottom-nav button:not(.active) svg { stroke: var(--text-light); }
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.page-header h1 { text-align: left; }
+.add-button { width: 44px; height: 44px; font-size: 28px; line-height: 44px; padding: 0; border-radius: 50%; }
+.empty-state { text-align: center; margin-top: 40px; color: var(--text-light); }
+.client-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; }
+.client-card { background-color: var(--card-background); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); border: 1px solid var(--border-color); }
+.client-card h3 { margin: 0 0 8px 0; text-align: left; font-size: 18px; }
+.client-card p { margin: 0; text-align: left; font-size: 14px; color: var(--text-light); }
+
+/* --- Styles pour la Modale --- */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s ease; }
+.modal-content { background: white; padding: 24px; border-radius: var(--border-radius); box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 90%; max-width: 500px; animation: slideIn 0.3s ease; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-header h2 { margin: 0; text-align: left; }
+.close-button { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-light); padding: 0; width: auto; }
+.modal-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: flex; gap: 12px; }
+.form-row input { flex: 1; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+
+/* --- Styles pour la carte cliquable --- */
+.client-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.client-card.clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.07);
+}
+
+/* --- Styles pour la page de détail --- */
+.detail-card {
+  background-color: var(--card-background);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  margin-top: 20px;
+}
+.client-code {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-block;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.info-grid div {
+  text-align: left;
+}
+.info-grid span {
+  font-size: 12px;
+  color: var(--text-light);
+  display: block;
+  margin-bottom: 4px;
+}
+.info-grid p {
+  font-size: 16px;
+  color: var(--text-dark);
+  margin: 0;
+  text-align: left;
+}
+
+/* --- Bouton Danger --- */
+button.danger {
+  background-color: var(--error-background);
+  color: var(--error-color);
+}
+button.danger:hover {
+  background-color: #f8d7da;
+}
+
+/* --- Modale de Confirmation --- */
+.modal-content.confirm-modal {
+  max-width: 400px;
+}
+.confirm-message {
+  text-align: center;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+}
+
+
+
+/* --- Styles pour les Notifications (Toasts) --- */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  color: white;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.4s ease;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast.success {
+  background-color: var(--primary-color);
+}
+
+.toast.error {
+  background-color: var(--error-color);
+}
+
+.toast-icon {
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.toast p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  text-align: left;
+}
+
+
+/* --- Page Programmes --- */
+.program-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+.program-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--card-background);
+  padding: 16px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+}
+.program-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+.program-icon.renforcement { background-color: #e8f6f3; }
+.program-icon.cardio { background-color: #fdeded; }
+
+.program-info h3 { margin: 0 0 4px 0; text-align: left; font-size: 18px; }
+.program-info p { margin: 0; text-align: left; font-size: 14px; color: var(--text-light); }
+
+/* --- Sélecteur de type de programme --- */
+.type-selector {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+.type-selector button {
+  flex: 1;
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+  border: 2px solid var(--border-color);
+  font-weight: 500;
+}
+.type-selector button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+
+/* --- Styles pour le formulaire d'exercice --- */
+.modal-form textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  resize: vertical;
+  min-height: 80px;
+}
+.modal-form textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--secondary-color);
+}
+.small-info {
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-light);
+  margin-top: -8px;
+}
+
+
+/* --- Styles pour les cartes d'exercices interactives --- */
+.exercise-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.exercise-card-info {
+  flex-grow: 1;
+}
+.exercise-card-actions {
+  position: relative;
+}
+.options-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: var(--text-light);
+}
+.options-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+}
+
+.options-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid var(--border-color);
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.options-menu button {
+  background-color: transparent;
+  color: var(--text-dark);
+  text-align: left;
+  padding: 10px 16px;
+  border-radius: 0;
+  width: 120px;
+  font-weight: 500;
+}
+.options-menu button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* --- Styles pour l'en-tête de la page de détail --- */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+.detail-header h1, .detail-header p {
+  text-align: left;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+.icon-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 20px;
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+}
+.icon-button:hover {
+  background-color: var(--secondary-hover);
+}
+
+
+/* --- Bouton pour retirer un programme --- */
+.unassign-button {
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 24px;
+  line-height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0; /* Empêche le bouton de rétrécir */
+}
+.unassign-button:hover {
+  background-color: var(--error-background);
+  color: var(--error-color);
+}
+
+
+/* --- Styles pour la vue Programme Client --- */
+.assigned-program-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.program-container > h2 {
+  text-align: left;
+  margin-bottom: 4px;
+}
+.program-container > .subtitle {
+  text-align: left;
+  margin-top: 0;
+}
+.exercise-card.client-view {
+  border-left: 4px solid var(--primary-color);
+}
+
+
+/* --- Styles améliorés pour la vue client --- */
+.program-card.client {
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.program-card.client .program-info {
+  flex-grow: 1; /* Pousse la flèche à droite */
+}
+
+.progress-indicator {
+  margin: 4px 0 0 0 !important;
+  font-size: 13px !important;
+  color: var(--text-light) !important;
+  text-align: left !important;
+}
+
+.arrow-indicator {
+  font-size: 24px;
+  color: var(--border-color);
+  transition: color 0.2s ease;
+}
+
+.program-card.client:hover .arrow-indicator {
+  color: var(--primary-color);
+}
+
+
+/* --- Styles pour la page de détail client --- */
+.exercise-list.client-detail-list {
+  gap: 12px;
+}
+.exercise-card.client-detail {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+}
+
+.exercise-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.exercise-status {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+/* --- Styles pour la modale de feedback --- */
+.feedback-question {
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+.rating-selector {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+.rating-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: var(--border-radius);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+.rating-option:hover {
+  background-color: var(--secondary-color);
+}
+.rating-option.selected {
+  border-color: var(--primary-color);
+  background-color: var(--secondary-color);
+}
+.rating-emoji {
+  font-size: 32px;
+}
+.rating-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+.photo-upload-label {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 14px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.photo-upload-label:hover {
+  border-color: var(--primary-color);
+  background-color: var(--secondary-color);
+}
+
+/* --- Styles pour les exercices cochés --- */
+.exercise-card.client-detail.checked {
+  background-color: var(--secondary-color);
+  border-color: var(--primary-color);
+}
+.exercise-status.checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.progress-indicator.completed {
+  color: var(--primary-color) !important;
+  font-weight: 500;
+}
+
+
+/* --- Styles pour l'historique d'activité du coach --- */
+.feedback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+.feedback-card {
+  background-color: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--box-shadow);
+}
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.feedback-header h4 {
+  margin: 0;
+  font-size: 16px;
+}
+.feedback-header span {
+  font-size: 12px;
+  color: var(--text-light);
+}
+.feedback-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.feedback-notes {
+  background-color: var(--background-color);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-style: italic;
+  margin: 0 0 12px 0;
+  text-align: left;
+  line-height: 1.5;
+}
+.feedback-photo-thumbnail {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.feedback-photo-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+.feedback-photo-thumbnail:hover img {
+  transform: scale(1.1);
+}
+
+/* --- Styles pour la Lightbox --- */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease;
+}
+.lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+.lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  border-radius: 8px;
+}
+.lightbox-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 28px;
+  line-height: 40px;
+  cursor: pointer;
+}
