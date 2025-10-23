@@ -1,19 +1,17 @@
 // src/pages/ProgramsPage.jsx
-import React, { useState } from 'react';
-import AddProgramModal from '../components/AddProgramModal';
+import React from 'react';
 
-const ProgramsPage = ({ programs, loading, onSelectProgram, onProgramAdded }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+const ProgramsPage = ({ programs, loading, onSelectProgram, onNewProgram }) => {
   return (
     <div className="screen">
       <div className="page-header">
         <h1>Mes Programmes</h1>
-        <button className="add-button" onClick={() => setIsModalOpen(true)}>+</button>
+        {/* Ce bouton déclenche maintenant la création via le dashboard */}
+        <button className="add-button" onClick={onNewProgram}>+</button>
       </div>
 
       {loading && <p className="loading-text">Chargement des programmes...</p>}
-      
+
       {!loading && programs.length === 0 && (
         <div className="empty-state">
           <p>Vous n'avez créé aucun programme.</p>
@@ -24,7 +22,6 @@ const ProgramsPage = ({ programs, loading, onSelectProgram, onProgramAdded }) =>
       {!loading && programs.length > 0 && (
         <div className="program-list">
           {programs.map(program => (
-            // On rend la carte cliquable ici
             <div key={program.id} className="program-card clickable" onClick={() => onSelectProgram(program)}>
               <div className={`program-icon ${program.type.toLowerCase()}`}>
                 {program.type === 'Renforcement' ? '💪' : '❤️'}
@@ -37,8 +34,6 @@ const ProgramsPage = ({ programs, loading, onSelectProgram, onProgramAdded }) =>
           ))}
         </div>
       )}
-      
-      {isModalOpen && <AddProgramModal onClose={() => setIsModalOpen(false)} onProgramAdded={onProgramAdded} />}
     </div>
   );
 };

@@ -6,6 +6,14 @@ import ConfirmModal from '../components/ConfirmModal';
 import EditClientModal from '../components/EditClientModal';
 import AssignProgramModal from '../components/AssignProgramModal';
 
+// Petite icône SVG pour la copie
+const CopyIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+  </svg>
+);
+
 const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHistory }) => {
   const { addToast } = useNotification();
   const [assignedPrograms, setAssignedPrograms] = useState([]);
@@ -51,15 +59,24 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
     }
   };
 
+  // Nouvelle fonction pour copier le code
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(client.client_code);
+    addToast('success', 'Code d\'accès copié !');
+  };
+
   return (
     <div className="screen">
       <a href="#" className="back-link" onClick={onBack}>← Retour à la liste</a>
       
       <div className="detail-card">
         <h2>{client.full_name}</h2>
-        <p className="client-code">Code d'accès : <strong>{client.client_code}</strong></p>
+        {/* Mise à jour de l'affichage du code client */}
+        <div className="client-code-wrapper" onClick={handleCopyCode} title="Copier le code">
+          <span>Code d'accès : <strong>{client.client_code}</strong></span>
+          <CopyIcon />
+        </div>
         
-        {/* --- BLOC D'INFORMATIONS RESTAURÉ --- */}
         <div className="info-grid" style={{marginTop: '24px'}}>
           <div><span>Objectif</span><p>{client.main_goal || 'N/A'}</p></div>
           <div><span>Niveau</span><p>{client.fitness_level || 'N/A'}</p></div>
@@ -79,7 +96,6 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
         <button className="add-button" onClick={() => setShowAssignModal(true)}>+</button>
       </div>
 
-      {/* --- BLOC DE LA LISTE DES PROGRAMMES RESTAURÉ --- */}
       {loading && <p className="loading-text">Chargement...</p>}
       {!loading && assignedPrograms.length === 0 && <div className="empty-state"><p>Aucun programme assigné.</p></div>}
       {!loading && assignedPrograms.length > 0 && (
@@ -106,7 +122,6 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
         <button className="danger" onClick={() => setShowDeleteConfirm(true)}>Supprimer le client</button>
       </div>
       
-      {/* Les modales */}
       {showEditModal && <EditClientModal client={client} onClose={() => setShowEditModal(false)} onClientUpdated={(uc) => { onClientAction(uc); fetchAssignedPrograms(); }} />}
       {showDeleteConfirm && <ConfirmModal title="Supprimer le client" message={`Êtes-vous sûr de vouloir supprimer ${client.full_name} ?`} onConfirm={handleDelete} onCancel={() => setShowDeleteConfirm(false)} />}
       {showAssignModal && <AssignProgramModal client={client} programs={programs} assignedProgramIds={assignedPrograms.map(p => p.id)} onClose={() => setShowAssignModal(false)} onProgramAssigned={fetchAssignedPrograms} />}

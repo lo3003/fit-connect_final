@@ -2,11 +2,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import BottomNav from '../components/BottomNav';
 import { supabase } from '../services/supabaseClient';
-import ClientsPage from './ClientsPage'; 
+import ClientsPage from './ClientsPage';
 import ClientDetailPage from './ClientDetailPage';
 import ProgramsPage from './ProgramsPage';
-import ProgramDetailPage from './ProgramDetailPage';
-import ClientHistoryPage from './ClientHistoryPage'; // On importe la nouvelle page d'historique
+import ProgramEditorPage from './ProgramEditorPage'; // Renommé de ProgramDetailPage
+import ClientHistoryPage from './ClientHistoryPage';
 
 const AccountPage = () => (
     <div className="screen">
@@ -23,10 +23,11 @@ const AccountPage = () => (
 
 const CoachDashboardPage = () => {
   // --- STATES DE NAVIGATION ---
-  const [activeView, setActiveView] = useState('clients'); // Vue principale ('clients', 'programs', 'account')
-  const [selectedClient, setSelectedClient] = useState(null); // Pour afficher le détail d'un client
-  const [selectedProgram, setSelectedProgram] = useState(null); // Pour afficher le détail d'un programme
-  const [historyClient, setHistoryClient] = useState(null); // Pour afficher l'historique d'un client
+  const [activeView, setActiveView] = useState('clients');
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedProgramId, setSelectedProgramId] = useState(null); // On ne garde que l'ID
+  const [historyClient, setHistoryClient] = useState(null);
+  const [isCreatingProgram, setIsCreatingProgram] = useState(false); // Nouvel état pour la création
 
   // --- STATES DE DONNÉES ---
   const [clients, setClients] = useState([]);
@@ -34,79 +35,69 @@ const CoachDashboardPage = () => {
   const [loading, setLoading] = useState(true);
 
   // --- GESTION DES DONNÉES ---
-  // Fonction unifiée pour récupérer toutes les données du coach
   const fetchData = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // Récupérer les clients
       const { data: clientsData } = await supabase.from('clients').select('*').eq('coach_id', user.id).order('created_at', { ascending: false });
       if (clientsData) setClients(clientsData);
 
-      // Récupérer les programmes
       const { data: programsData } = await supabase.from('programs').select('*').eq('coach_id', user.id).order('created_at', { ascending: false });
       if (programsData) setPrograms(programsData);
     }
     setLoading(false);
   }, []);
 
-  // Récupère les données au premier chargement
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  // --- GESTION DES ACTIONS ---
-  // Appelé après modification ou suppression d'un client
-  const handleClientAction = (updatedClient = null) => {
-    fetchData(); // On rafraîchit toutes les données
-    setSelectedClient(updatedClient); // On reste sur la page de détail si c'est une modification
-  };
-  
-  // Appelé après modification ou suppression d'un programme
-  const handleProgramAction = (updatedProgram = null) => {
-    fetchData(); // On rafraîchit toutes les données
-    if (updatedProgram) {
-      setSelectedProgram(updatedProgram);
-    } else {
-      setSelectedProgram(null); // On revient à la liste si c'est une suppression
-    }
-  };
+  const handleBackFromEditor = () => {
+      setSelectedProgramId(null);
+      setIsCreatingProgram(false);
+      fetchData(); // Rafraîchir les données au cas où il y a eu des changements
+  }
 
   // --- AFFICHAGE CONDITIONNEL DES PAGES ---
   const renderActiveView = () => {
-    // Priorité 1 : Afficher la page d'historique
     if (historyClient) {
       return <ClientHistoryPage client={historyClient} onBack={() => setHistoryClient(null)} />;
     }
-    // Priorité 2 : Afficher les pages de détail
     if (selectedClient) {
-      return <ClientDetailPage 
-                client={selectedClient} 
-                programs={programs} 
-                onBack={() => setSelectedClient(null)} 
-                onClientAction={handleClientAction} 
-                onViewHistory={setHistoryClient} // Passe la fonction pour ouvrir l'historique
+      return <ClientDetailPage
+                client={selectedClient}
+                programs={programs}
+                onBack={() => setSelectedClient(null)}
+                onClientAction={() => { fetchData(); setSelectedClient(null); }}
+                onViewHistory={setHistoryClient}
               />;
     }
-    if (selectedProgram) {
-      return <ProgramDetailPage program={selectedProgram} onBack={() => setSelectedProgram(null)} onProgramAction={handleProgramAction} />;
+    // Vue de création ou d'édition de programme
+    if (isCreatingProgram || selectedProgramId) {
+        return <ProgramEditorPage
+                    programId={isCreatingProgram ? 'new' : selectedProgramId}
+                    onBack={handleBackFromEditor}
+                />
     }
-    
-    // Sinon, afficher la vue principale sélectionnée dans la barre de navigation
+
     switch (activeView) {
       case 'clients':
-        return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={handleClientAction} />;
+        return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={fetchData} />;
       case 'programs':
-        return <ProgramsPage programs={programs} loading={loading} onSelectProgram={setSelectedProgram} onProgramAdded={handleProgramAction} />;
+        return <ProgramsPage
+                    programs={programs}
+                    loading={loading}
+                    onSelectProgram={(program) => setSelectedProgramId(program.id)}
+                    onNewProgram={() => setIsCreatingProgram(true)}
+                />;
       case 'account':
         return <AccountPage />;
       default:
-        return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={handleClientAction} />;
+        return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={fetchData} />;
     }
   };
-  
-  // On n'affiche la barre de navigation que sur les écrans principaux
-  const showNav = !selectedClient && !selectedProgram && !historyClient;
+
+  const showNav = !selectedClient && !selectedProgramId && !historyClient && !isCreatingProgram;
 
   return (
     <div className="dashboard-layout">
