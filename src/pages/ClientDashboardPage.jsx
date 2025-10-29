@@ -5,8 +5,16 @@ import ClientBottomNav from '../components/ClientBottomNav';
 import ClientProgramPage from './ClientProgramPage';
 import ClientProgramDetailPage from './ClientProgramDetailPage';
 
-const ClientAccountPage = ({ client, onLogout }) => ( /* ... (Pas de changement ici) ... */
-    <div className="screen"><div className="content-centered"><h2>Mon Compte</h2><p>Connecté en tant que {client.full_name}</p><div className="button-group"><button className="secondary" onClick={onLogout}>Se déconnecter</button></div></div></div>
+const ClientAccountPage = ({ client, onLogout }) => (
+    <div className="screen">
+        <div className="content-centered">
+            <h2>Mon Compte</h2>
+            <p>Connecté en tant que {client.full_name}</p>
+            <div className="button-group">
+                <button className="secondary" onClick={onLogout}>Se déconnecter</button>
+            </div>
+        </div>
+    </div>
 );
 
 const ClientDashboardPage = ({ client, onLogout }) => {
@@ -22,7 +30,12 @@ const ClientDashboardPage = ({ client, onLogout }) => {
       .from('client_programs')
       .select(`*, programs (*, exercises (*))`)
       .eq('client_id', client.id);
-    if (programsData) setAssignedPrograms(programsData);
+      
+    if (programsData) {
+        // On filtre les assignations dont le programme a été supprimé
+        const validPrograms = programsData.filter(assignment => assignment.programs);
+        setAssignedPrograms(validPrograms);
+    }
 
     const { data: logsData } = await supabase.from('workout_logs').select('*').eq('client_id', client.id);
     if (logsData) setWorkoutLogs(logsData);
@@ -38,19 +51,31 @@ const ClientDashboardPage = ({ client, onLogout }) => {
     if (selectedAssignment) {
       return <ClientProgramDetailPage 
                 assignment={selectedAssignment} 
-                client={client} // On passe les infos du client
+                client={client}
                 onBack={() => setSelectedAssignment(null)}
-                onWorkoutLogged={fetchClientData} // On rafraîchit tout après un log
+                onWorkoutLogged={fetchClientData}
               />;
     }
 
     switch (activeView) {
       case 'program':
-        return <ClientProgramPage assignedPrograms={assignedPrograms} workoutLogs={workoutLogs} loading={loading} onSelectProgram={setSelectedAssignment} />;
+        return <ClientProgramPage 
+                  client={client} 
+                  assignedPrograms={assignedPrograms} 
+                  workoutLogs={workoutLogs} 
+                  loading={loading} 
+                  onSelectProgram={setSelectedAssignment} 
+               />;
       case 'account':
         return <ClientAccountPage client={client} onLogout={onLogout} />;
       default:
-        return <ClientProgramPage assignedPrograms={assignedPrograms} workoutLogs={workoutLogs} loading={loading} onSelectProgram={setSelectedAssignment} />;
+        return <ClientProgramPage 
+                  client={client} 
+                  assignedPrograms={assignedPrograms} 
+                  workoutLogs={workoutLogs} 
+                  loading={loading} 
+                  onSelectProgram={setSelectedAssignment} 
+               />;
     }
   };
 

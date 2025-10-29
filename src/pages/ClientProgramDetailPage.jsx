@@ -1,64 +1,128 @@
 // src/pages/ClientProgramDetailPage.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import WorkoutFeedbackModal from '../components/WorkoutFeedbackModal';
 
 const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }) => {
   const program = assignment.programs;
-  const exercises = program.exercises.sort((a,b) => a.id - b.id);
-  
-  const [checkedExoIds, setCheckedExoIds] = useState(new Set());
+  const exercises = program.exercises.sort((a, b) => a.id - b.id);
+
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [completedExercises, setCompletedExercises] = useState(new Set());
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
-  const handleCheck = (exoId) => {
-    const newCheckedIds = new Set(checkedExoIds);
-    if (newCheckedIds.has(exoId)) {
-      newCheckedIds.delete(exoId);
-    } else {
-      newCheckedIds.add(exoId);
+  const totalExercises = exercises.length;
+  const currentExercise = exercises[currentExerciseIndex];
+
+  // Quand le client termine un exercice (en cliquant sur Suivant/Terminer)
+  const handleCompleteExercise = () => {
+    const newCompleted = new Set(completedExercises);
+    newCompleted.add(currentExercise.id);
+    setCompletedExercises(newCompleted);
+
+    // Si ce n'est pas le dernier exercice, on passe au suivant
+    if (currentExerciseIndex < totalExercises - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
     }
-    setCheckedExoIds(newCheckedIds);
   };
   
-  // On vérifie si tous les exercices sont cochés
-  const allExercisesChecked = useMemo(() => {
-    return exercises.length > 0 && checkedExoIds.size === exercises.length;
-  }, [checkedExoIds, exercises.length]);
+  // Aller à l'exercice précédent
+  const handlePreviousExercise = () => {
+    if (currentExerciseIndex > 0) {
+      setCurrentExerciseIndex(currentExerciseIndex - 1);
+    }
+  };
 
-  // Déclencher la modale quand tout est coché
-  React.useEffect(() => {
-    if (allExercisesChecked) {
+  // Vérifie si tous les exercices sont marqués comme complétés pour afficher la modale
+  const allExercisesCompleted = useMemo(() => {
+    return totalExercises > 0 && completedExercises.size === totalExercises;
+  }, [completedExercises, totalExercises]);
+
+  useEffect(() => {
+    if (allExercisesCompleted) {
       setShowFeedbackModal(true);
     }
-  }, [allExercisesChecked]);
+  }, [allExercisesCompleted]);
+
+  // Si pas d'exercice, on affiche un message
+  if (!currentExercise) {
+    return (
+      <div className="screen workout-focus-mode">
+         <a href="#" className="back-link" onClick={onBack}>← Retour</a>
+         <div className="empty-state" style={{flex: 1, justifyContent: 'center'}}>
+            <p>Ce programme ne contient aucun exercice.</p>
+         </div>
+      </div>
+    );
+  }
+
+  const isLastExercise = currentExerciseIndex === totalExercises - 1;
 
   return (
-    <div className="screen">
-      <a href="#" className="back-link" onClick={onBack}>← Mes programmes</a>
-      
-      <div className="detail-header">
-        <div>
-          <h1>{program.name}</h1>
-          <p className="subtitle">{program.type}</p>
+    <>
+      <div className="screen workout-focus-mode">
+        {/* En-tête avec progression */}
+        <div className="workout-header">
+          <a href="#" className="back-link-workout" onClick={onBack}>Quitter</a>
+          <div className="workout-progress">
+            <p>{program.name}</p>
+            <div className="progress-bar-container">
+              <div 
+                className="progress-bar-fill" 
+                style={{ width: `${((currentExerciseIndex + 1) / totalExercises) * 100}%` }}
+              ></div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="exercise-list client-detail-list">
-        {exercises.map((exo, index) => {
-          const isChecked = checkedExoIds.has(exo.id);
-          return (
-            <div key={exo.id} className={`exercise-card client-detail ${isChecked ? 'checked' : ''}`} onClick={() => handleCheck(exo.id)}>
-              <div className="exercise-number">{index + 1}</div>
-              <div className="exercise-card-info">
-                <h3>{exo.name}</h3>
-                {program.type === 'Renforcement' && <p>{exo.sets} séries × {exo.reps} reps</p>}
-                {program.type === 'Cardio' && <p>{exo.duration_minutes} min - Intensité {exo.intensity}</p>}
+        {/* Affichage de l'exercice en cours */}
+        <div className="current-exercise-display">
+          {currentExercise.photo_url && (
+            <div className="exercise-photo-container">
+                <img src={currentExercise.photo_url} alt={`Illustration pour ${currentExercise.name}`} />
+            </div>
+          )}
+          
+          <h1 className="exercise-name">{currentExercise.name}</h1>
+          
+          {program.type === 'Renforcement' ? (
+            <div className="exercise-details renforcement">
+              <div className="detail-block">
+                <span>{currentExercise.sets}</span>
+                <label>Séries</label>
               </div>
-              <div className={`exercise-status ${isChecked ? 'checked' : ''}`}>
-                {isChecked && '✔️'}
+              <div className="detail-separator">×</div>
+              <div className="detail-block">
+                <span>{currentExercise.reps}</span>
+                <label>Répétitions</label>
               </div>
             </div>
-          );
-        })}
+          ) : (
+            <div className="exercise-details cardio">
+              <div className="detail-block">
+                <span>{currentExercise.duration_minutes}</span>
+                <label>Minutes</label>
+              </div>
+              <div className="detail-block">
+                <span>{currentExercise.intensity}</span>
+                <label>Intensité</label>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation */}
+        <div className="workout-navigation">
+          <button 
+            className="secondary" 
+            onClick={handlePreviousExercise}
+            disabled={currentExerciseIndex === 0}
+          >
+            Précédent
+          </button>
+          <button onClick={handleCompleteExercise}>
+            {isLastExercise ? 'Terminer la séance' : 'Suivant'}
+          </button>
+        </div>
       </div>
       
       {showFeedbackModal && 
@@ -67,12 +131,12 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
           program={program}
           onClose={() => setShowFeedbackModal(false)}
           onWorkoutLogged={() => {
-            onWorkoutLogged(); // Rafraîchit les données du dashboard
-            onBack(); // Revient à la liste des programmes
+            onWorkoutLogged();
+            onBack();
           }}
         />
       }
-    </div>
+    </>
   );
 };
 
