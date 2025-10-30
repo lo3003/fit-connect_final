@@ -167,7 +167,7 @@ input:focus, select:focus {
 .dashboard-content { flex-grow: 1; overflow-y: auto; }
 .loading-fullscreen, .loading-text { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light); }
 .loading-fullscreen { height: 100vh; }
-.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0;z-index: 900; }
+.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0; z-index: 900; }
 .bottom-nav button { background: none; border: none; color: var(--text-light); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; padding: 4px 12px; border-radius: var(--border-radius); flex-grow: 1; }
 .bottom-nav button.active { color: var(--primary-color); }
 .bottom-nav button.active svg { fill: var(--primary-color); }
@@ -186,6 +186,7 @@ input:focus, select:focus {
 /* ... (votre CSS existant) ... */
 
 /* --- STYLES CORRIGÉS POUR LA MODALE SCROLLABLE --- */
+/* 1. L'overlay reste un simple fond qui centre son contenu */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -193,19 +194,18 @@ input:focus, select:focus {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000; /* Doit être supérieur au z-index du footer */
+    z-index: 1000;
     animation: fadeIn 0.3s ease;
     
     display: flex;
-    align-items: center; /* Centre verticalement */
-    justify-content: center; /* Centre horizontalement */
+    align-items: center;
+    justify-content: center;
     padding: 1rem;
 }
 
-/* 2. C'est le contenu de la modale qui gère son propre défilement */
+/* 2. La modale a une hauteur maximale et devient un conteneur flexible */
 .modal-content {
     background: white;
-    padding: 24px;
     border-radius: var(--border-radius);
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     width: 100%;
@@ -214,8 +214,35 @@ input:focus, select:focus {
     
     /* La magie est ici : */
     max-height: 90vh; /* La modale ne dépassera jamais 90% de la hauteur de l'écran */
-    overflow-y: auto; /* Si le contenu est plus grand, une barre de défilement apparaît À L'INTÉRIEUR de la modale */
-    -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
+    display: flex; /* On transforme la modale en conteneur flex */
+    flex-direction: column; /* Ses enfants s'aligneront verticalement */
+    overflow: hidden; /* Empêche le contenu de déborder visuellement */
+}
+
+.modal-header {
+    /* ... (vos styles existants, pas de changement) ... */
+    padding: 24px 24px 0 24px; /* On ajuste le padding */
+    margin-bottom: 20px;
+}
+
+/* 3. Le formulaire devient la zone de défilement principale */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    /* C'est cette partie qui défilera si le contenu est trop long */
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch;
+    padding: 0 24px; /* On ajoute le padding ici */
+    
+    flex: 1; /* Le formulaire prendra toute la place verticale disponible */
+}
+
+/* On s'assure que le dernier bouton a de l'espace en bas */
+.modal-form button:last-child {
+    margin-top: 8px;
+    margin-bottom: 24px;
 }
 
 /* ... (le reste de votre CSS) ... */
