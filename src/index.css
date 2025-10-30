@@ -167,7 +167,7 @@ input:focus, select:focus {
 .dashboard-content { flex-grow: 1; overflow-y: auto; }
 .loading-fullscreen, .loading-text { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light); }
 .loading-fullscreen { height: 100vh; }
-.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0; }
+.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0;z-index: 900; }
 .bottom-nav button { background: none; border: none; color: var(--text-light); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; padding: 4px 12px; border-radius: var(--border-radius); flex-grow: 1; }
 .bottom-nav button.active { color: var(--primary-color); }
 .bottom-nav button.active svg { fill: var(--primary-color); }
@@ -193,16 +193,16 @@ input:focus, select:focus {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
+    z-index: 1000; /* Doit être supérieur au z-index du footer */
     animation: fadeIn 0.3s ease;
     
-    /* On transforme l'overlay en conteneur scrollable */
     display: flex;
-    justify-content: center;
-    overflow-y: auto; /* Permet le défilement vertical */
-    padding: 2rem 1rem; /* Ajoute de l'espace en haut/bas et sur les côtés */
+    align-items: center; /* Centre verticalement */
+    justify-content: center; /* Centre horizontalement */
+    padding: 1rem;
 }
 
+/* 2. C'est le contenu de la modale qui gère son propre défilement */
 .modal-content {
     background: white;
     padding: 24px;
@@ -212,9 +212,10 @@ input:focus, select:focus {
     max-width: 500px;
     animation: slideIn 0.3s ease;
     
-    /* S'assure que la modale reste centrée et ne dépasse pas */
-    margin: auto; /* Centre la modale verticalement */
-    max-height: 100%;
+    /* La magie est ici : */
+    max-height: 90vh; /* La modale ne dépassera jamais 90% de la hauteur de l'écran */
+    overflow-y: auto; /* Si le contenu est plus grand, une barre de défilement apparaît À L'INTÉRIEUR de la modale */
+    -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
 }
 
 /* ... (le reste de votre CSS) ... */
