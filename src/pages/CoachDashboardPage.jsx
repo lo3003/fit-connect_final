@@ -7,7 +7,7 @@ import ClientDetailPage from './ClientDetailPage';
 import ProgramsPage from './ProgramsPage';
 import ProgramEditorPage from './ProgramEditorPage';
 import ClientHistoryPage from './ClientHistoryPage';
-import ExerciseLibraryPage from './ExerciseLibraryPage'; // Importer la nouvelle page
+import ExerciseLibraryPage from './ExerciseLibraryPage';
 
 const AccountPage = () => (
     <div className="screen">
@@ -23,35 +23,29 @@ const AccountPage = () => (
 );
 
 const CoachDashboardPage = () => {
-  // --- STATES DE NAVIGATION ---
-  const [activeView, setActiveView] = useState('clients'); // Vue principale ('clients', 'programs', 'library', 'account')
-  const [selectedClient, setSelectedClient] = useState(null); // Pour afficher le détail d'un client
-  const [selectedProgramId, setSelectedProgramId] = useState(null); // On ne garde que l'ID
-  const [historyClient, setHistoryClient] = useState(null); // Pour afficher l'historique d'un client
-  const [isCreatingProgram, setIsCreatingProgram] = useState(false); // Nouvel état pour la création
+  const [activeView, setActiveView] = useState('clients');
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [selectedProgramId, setSelectedProgramId] = useState(null);
+  const [historyClient, setHistoryClient] = useState(null);
+  const [isCreatingProgram, setIsCreatingProgram] = useState(false);
 
-  // --- STATES DE DONNÉES ---
   const [clients, setClients] = useState([]);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- GESTION DES DONNÉES ---
   const fetchData = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      // Récupérer les clients
       const { data: clientsData } = await supabase.from('clients').select('*').eq('coach_id', user.id).order('created_at', { ascending: false });
       if (clientsData) setClients(clientsData);
 
-      // Récupérer les programmes
       const { data: programsData } = await supabase.from('programs').select('*').eq('coach_id', user.id).order('created_at', { ascending: false });
       if (programsData) setPrograms(programsData);
     }
     setLoading(false);
   }, []);
 
-  // Récupère les données au premier chargement
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -59,16 +53,13 @@ const CoachDashboardPage = () => {
   const handleBackFromEditor = () => {
       setSelectedProgramId(null);
       setIsCreatingProgram(false);
-      fetchData(); // Rafraîchir les données au cas où il y a eu des changements
+      fetchData();
   }
 
-  // --- AFFICHAGE CONDITIONNEL DES PAGES ---
   const renderActiveView = () => {
-    // Priorité 1 : Afficher la page d'historique
     if (historyClient) {
       return <ClientHistoryPage client={historyClient} onBack={() => setHistoryClient(null)} />;
     }
-    // Priorité 2 : Afficher les pages de détail
     if (selectedClient) {
       return <ClientDetailPage
                 client={selectedClient}
@@ -78,7 +69,6 @@ const CoachDashboardPage = () => {
                 onViewHistory={setHistoryClient}
               />;
     }
-    // Vue de création ou d'édition de programme
     if (isCreatingProgram || selectedProgramId) {
         return <ProgramEditorPage
                     programId={isCreatingProgram ? 'new' : selectedProgramId}
@@ -86,7 +76,6 @@ const CoachDashboardPage = () => {
                 />
     }
 
-    // Sinon, afficher la vue principale sélectionnée dans la barre de navigation
     switch (activeView) {
       case 'clients':
         return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={fetchData} />;

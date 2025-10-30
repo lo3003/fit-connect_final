@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { useNotification } from '../contexts/NotificationContext';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import ConfirmModal from '../components/ConfirmModal';
@@ -52,6 +52,7 @@ const SortableItem = ({ item, onEdit, onDelete }) => {
         </div>
     );
 };
+
 
 const ProgramEditorPage = ({ programId, onBack }) => {
     const { addToast } = useNotification();
@@ -160,7 +161,15 @@ const ProgramEditorPage = ({ programId, onBack }) => {
         addToast('success', "Élément supprimé de la liste.");
     };
     
-    const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+            },
+        })
+    );
 
     const handleDragEnd = (event) => {
         const { active, over } = event;

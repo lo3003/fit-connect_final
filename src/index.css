@@ -23,10 +23,20 @@
   --box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.05); /* Ombre plus marquée pour les modales ou les cartes au survol */
 }
 
+
+
+
+html, body, #root, .app-container {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Empêche le défilement global */
+}
+
 body {
-  margin: 0;
   background-color: var(--background-color);
   color: var(--text-dark);
+  font-family: 'Inter', sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -34,24 +44,50 @@ body {
 .app-container {
   width: 100%;
   max-width: 420px;
-  min-height: 100vh;
   margin: 0 auto;
   background-color: var(--card-background);
-  box-shadow: var(--box-shadow);
+  box-shadow: var(--box-shadow-lg);
   display: flex;
   flex-direction: column;
 }
 
-@media (max-width: 450px) {
-  .app-container { max-width: 100%; box-shadow: none; border-radius: 0; }
+/* --- STRUCTURE DE DÉFILEMENT MOBILE-FIRST --- */
+.dashboard-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.dashboard-content {
+    flex: 1;
+    overflow-y: auto; /* C'est cette zone qui défilera */
+    -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
 }
 
 .screen {
   padding: 24px 28px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  min-height: 100%; /* S'assure que le .screen prend au moins toute la hauteur visible */
 }
+/* Pour les écrans sans barre de navigation, le contenu peut aller jusqu'en bas */
+.screen:not(.has-nav) {
+    padding-bottom: 24px;
+}
+/* Pour les écrans avec barre de navigation, on ajoute de l'espace en bas */
+.screen.has-nav {
+    padding-bottom: 90px;
+}
+
+
+/* ... (le reste de votre CSS pour les composants, boutons, etc. reste identique) ... */
+/* ... Collez ici tout votre CSS existant à partir de h1, h2, p ... */
+
+
+
+
+
 
 h1 { font-size: 28px; text-align: center; margin: 0; }
 h2 { font-size: 24px; text-align: center; margin: 0; }
