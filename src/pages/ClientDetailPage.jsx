@@ -6,7 +6,6 @@ import ConfirmModal from '../components/ConfirmModal';
 import EditClientModal from '../components/EditClientModal';
 import AssignProgramModal from '../components/AssignProgramModal';
 
-// Petite icône SVG pour la copie
 const CopyIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -19,7 +18,6 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
   const [assignedPrograms, setAssignedPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // États pour les modales
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -27,8 +25,12 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
 
   const fetchAssignedPrograms = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.from('client_programs').select(`programs (id, name, type)`).eq('client_id', client.id);
-    if (data) setAssignedPrograms(data.map(item => item.programs));
+    // --- CORRECTION ICI ---
+    // On ne demande plus la colonne 'type' qui n'existe plus sur la table 'programs'
+    const { data } = await supabase.from('client_programs').select(`programs (id, name)`).eq('client_id', client.id);
+    if (data) {
+        setAssignedPrograms(data.filter(item => item.programs).map(item => item.programs));
+    }
     setLoading(false);
   }, [client.id]);
 
@@ -52,14 +54,13 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
         if (error) throw error;
         addToast('success', `Le programme a été retiré.`);
         setProgramToUnassign(null);
-        fetchAssignedPrograms();
+        fetchAssignedPrograms(); // Rafraîchit la liste
     } catch (error) {
         addToast('error', error.message);
         setProgramToUnassign(null);
     }
   };
 
-  // Nouvelle fonction pour copier le code
   const handleCopyCode = () => {
     navigator.clipboard.writeText(client.client_code);
     addToast('success', 'Code d\'accès copié !');
@@ -71,19 +72,22 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
       
       <div className="detail-card">
         <h2>{client.full_name}</h2>
-        {/* Mise à jour de l'affichage du code client */}
         <div className="client-code-wrapper" onClick={handleCopyCode} title="Copier le code">
           <span>Code d'accès : <strong>{client.client_code}</strong></span>
           <CopyIcon />
         </div>
         
-        <div className="info-grid" style={{marginTop: '24px'}}>
+        <div className="info-grid full" style={{marginTop: '24px'}}>
           <div><span>Objectif</span><p>{client.main_goal || 'N/A'}</p></div>
           <div><span>Niveau</span><p>{client.fitness_level || 'N/A'}</p></div>
           <div><span>Poids initial</span><p>{client.initial_weight_kg ? `${client.initial_weight_kg} kg` : 'N/A'}</p></div>
           <div><span>Taille</span><p>{client.height_cm ? `${client.height_cm} cm` : 'N/A'}</p></div>
           <div><span>Âge</span><p>{client.age || 'N/A'}</p></div>
           <div><span>Email</span><p>{client.email || 'N/A'}</p></div>
+          <div className="full-width"><span>Fréquence d'entraînement</span><p>{client.training_frequency || 'N/A'}</p></div>
+          <div className="full-width"><span>Passif Sportif</span><p>{client.sporting_past || 'N/A'}</p></div>
+          <div className="full-width"><span>Matériel à disposition</span><p>{client.available_equipment || 'N/A'}</p></div>
+          <div className="full-width"><span>Soucis Physiques</span><p>{client.physical_issues || 'N/A'}</p></div>
         </div>
       </div>
       
@@ -102,12 +106,11 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
         <div className="program-list">
           {assignedPrograms.map(program => (
             <div key={program.id} className="program-card">
-              <div className={`program-icon ${program.type.toLowerCase()}`}>
-                {program.type === 'Renforcement' ? '💪' : '❤️'}
-              </div>
+              {/* --- CORRECTION ICI --- */}
+              {/* On retire l'icône et on met un texte générique */}
               <div className="program-info">
                 <h3>{program.name}</h3>
-                <p>{program.type}</p>
+                <p>Programme mixte</p>
               </div>
               <button className="unassign-button" title="Retirer le programme" onClick={() => setProgramToUnassign(program)}>
                 &times;

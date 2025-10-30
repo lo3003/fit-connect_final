@@ -1,14 +1,18 @@
 // src/components/AddClientModal.jsx
 import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
-import { useNotification } from '../contexts/NotificationContext'; // On importe le hook
+import { useNotification } from '../contexts/NotificationContext';
 
 const AddClientModal = ({ onClose, onClientAdded }) => {
-  const { addToast } = useNotification(); // On utilise le hook
-  // ... (le reste du state reste identique) ...
+  const { addToast } = useNotification();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '', email: '', initial_weight_kg: '', height_cm: '', age: '', main_goal: '', fitness_level: 'Débutant',
+    // Ajout des nouveaux champs
+    sporting_past: '',
+    available_equipment: '',
+    training_frequency: '',
+    physical_issues: '',
   });
 
   const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -24,13 +28,12 @@ const AddClientModal = ({ onClose, onClientAdded }) => {
       const { error } = await supabase.from('clients').insert(newClient);
       if (error) throw error;
 
-      // On remplace alert() par notre nouvelle notification
       addToast('success', `Client "${formData.full_name}" ajouté ! Code : ${newClient.client_code}`);
       
       onClientAdded();
       onClose();
     } catch (error) {
-      addToast('error', error.message); // On affiche aussi les erreurs
+      addToast('error', error.message);
     } finally {
       setLoading(false);
     }
@@ -38,7 +41,6 @@ const AddClientModal = ({ onClose, onClientAdded }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-        {/* Le JSX du formulaire reste identique */}
         <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header"><h2>Nouveau Client</h2><button onClick={onClose} className="close-button">&times;</button></div>
             <form onSubmit={handleSubmit} className="modal-form">
@@ -53,6 +55,14 @@ const AddClientModal = ({ onClose, onClientAdded }) => {
                 <select name="fitness_level" value={formData.fitness_level} onChange={handleChange}>
                     <option>Débutant</option><option>Intermédiaire</option><option>Avancé</option>
                 </select>
+
+                {/* --- NOUVEAUX CHAMPS --- */}
+                <hr className="form-divider" />
+                <textarea name="sporting_past" value={formData.sporting_past} onChange={handleChange} placeholder="Passif sportif..." rows="2"></textarea>
+                <textarea name="available_equipment" value={formData.available_equipment} onChange={handleChange} placeholder="Matériel à disposition..." rows="2"></textarea>
+                <input name="training_frequency" value={formData.training_frequency} onChange={handleChange} placeholder="Fréquence d'entraînement souhaitée" />
+                <textarea name="physical_issues" value={formData.physical_issues} onChange={handleChange} placeholder="Soucis physiques (blessures, douleurs...)" rows="2"></textarea>
+                
                 <button type="submit" disabled={loading}>{loading ? 'Création...' : 'Créer le client'}</button>
             </form>
         </div>

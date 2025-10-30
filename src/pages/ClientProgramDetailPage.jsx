@@ -1,38 +1,55 @@
 // src/pages/ClientProgramDetailPage.jsx
 import React, { useState, useMemo, useEffect } from 'react';
 import WorkoutFeedbackModal from '../components/WorkoutFeedbackModal';
+import RestTimerView from '../components/RestTimerView'; // Importer le nouveau composant
 
 const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }) => {
   const program = assignment.programs;
-  const exercises = program.exercises.sort((a, b) => a.id - b.id);
+  // On s'assure de filtrer les titres de section pour ne garder que les exercices
+  const exercises = program.exercises
+    .filter(item => !item.is_section_header)
+    .sort((a, b) => a.order - b.order);
 
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [completedExercises, setCompletedExercises] = useState(new Set());
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  
+  // Nouvel état pour gérer le mode : 'exercise' ou 'rest'
+  const [sessionState, setSessionState] = useState('exercise');
 
   const totalExercises = exercises.length;
   const currentExercise = exercises[currentExerciseIndex];
+  const nextExercise = exercises[currentExerciseIndex + 1];
 
-  // Quand le client termine un exercice (en cliquant sur Suivant/Terminer)
-  const handleCompleteExercise = () => {
+  const handleNext = () => {
+    // Marquer l'exercice comme terminé
     const newCompleted = new Set(completedExercises);
     newCompleted.add(currentExercise.id);
     setCompletedExercises(newCompleted);
 
-    // Si ce n'est pas le dernier exercice, on passe au suivant
+    // S'il y a un temps de repos et que ce n'est pas le dernier exercice, passer en mode repos
+    if (currentExercise.rest_time && currentExerciseIndex < totalExercises - 1) {
+      setSessionState('rest');
+    } else {
+      // Sinon, passer à l'exercice suivant directement
+      goToNextExercise();
+    }
+  };
+  
+  const goToNextExercise = () => {
+    setSessionState('exercise'); // Repasser en mode exercice
     if (currentExerciseIndex < totalExercises - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     }
   };
   
-  // Aller à l'exercice précédent
   const handlePreviousExercise = () => {
+    setSessionState('exercise'); // S'assurer de revenir en mode exercice
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(currentExerciseIndex - 1);
     }
   };
 
-  // Vérifie si tous les exercices sont marqués comme complétés pour afficher la modale
   const allExercisesCompleted = useMemo(() => {
     return totalExercises > 0 && completedExercises.size === totalExercises;
   }, [completedExercises, totalExercises]);
@@ -43,7 +60,6 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
     }
   }, [allExercisesCompleted]);
 
-  // Si pas d'exercice, on affiche un message
   if (!currentExercise) {
     return (
       <div className="screen workout-focus-mode">
@@ -57,10 +73,21 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
 
   const isLastExercise = currentExerciseIndex === totalExercises - 1;
 
+  // AFFICHAGE CONDITIONNEL : EXERCICE OU REPOS
+  if (sessionState === 'rest') {
+    return (
+        <RestTimerView 
+            duration={currentExercise.rest_time}
+            nextExerciseName={nextExercise?.name || "Fin de la séance"}
+            onComplete={goToNextExercise}
+            onSkip={goToNextExercise}
+        />
+    );
+  }
+
   return (
     <>
       <div className="screen workout-focus-mode">
-        {/* En-tête avec progression */}
         <div className="workout-header">
           <a href="#" className="back-link-workout" onClick={onBack}>Quitter</a>
           <div className="workout-progress">
@@ -74,7 +101,6 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
           </div>
         </div>
 
-        {/* Affichage de l'exercice en cours */}
         <div className="current-exercise-display">
           {currentExercise.photo_url && (
             <div className="exercise-photo-container">
@@ -84,7 +110,7 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
           
           <h1 className="exercise-name">{currentExercise.name}</h1>
           
-          {program.type === 'Renforcement' ? (
+          {currentExercise.type === 'Renforcement' ? (
             <div className="exercise-details renforcement">
               <div className="detail-block">
                 <span>{currentExercise.sets}</span>
@@ -109,8 +135,13 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
             </div>
           )}
         </div>
+        
+        {!isLastExercise && currentExercise.rest_time && (
+            <div className="next-rest-display">
+                <p>Repos à suivre : <strong>{currentExercise.rest_time}</strong></p>
+            </div>
+        )}
 
-        {/* Navigation */}
         <div className="workout-navigation">
           <button 
             className="secondary" 
@@ -119,7 +150,7 @@ const ClientProgramDetailPage = ({ assignment, client, onBack, onWorkoutLogged }
           >
             Précédent
           </button>
-          <button onClick={handleCompleteExercise}>
+          <button onClick={handleNext}>
             {isLastExercise ? 'Terminer la séance' : 'Suivant'}
           </button>
         </div>

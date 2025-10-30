@@ -12,7 +12,6 @@ const PlayIcon = () => (
     </svg>
 );
 
-
 const ClientProgramPage = ({ assignedPrograms, workoutLogs, loading, onSelectProgram, client }) => {
   const welcomeMessage = (client && client.full_name) 
     ? `Bonjour, ${client.full_name.split(' ')[0]} !`
@@ -28,7 +27,11 @@ const ClientProgramPage = ({ assignedPrograms, workoutLogs, loading, onSelectPro
 
     const logsForThisProgram = workoutLogs.filter(log => log.program_id === assignment.programs.id);
     const lastLogDate = logsForThisProgram.length > 0 ? new Date(logsForThisProgram[0].completed_at).toLocaleDateString('fr-FR') : null;
-    const exerciseCount = Array.isArray(assignment.programs.exercises) ? assignment.programs.exercises.length : 0;
+    const exercises = assignment.programs.exercises?.filter(item => !item.is_section_header) || [];
+    const exerciseCount = exercises.length;
+    
+    // On détermine un type "principal" pour l'icône, ou on met une valeur par défaut
+    const primaryType = exercises.length > 0 ? exercises[0].type : 'Renforcement';
 
     if (isFeatured) {
       return (
@@ -36,23 +39,23 @@ const ClientProgramPage = ({ assignedPrograms, workoutLogs, loading, onSelectPro
           <div className="featured-program-info">
             <p>Prochaine séance</p>
             <h3>{assignment.programs.name}</h3>
-            <span>{assignment.programs.type} • {exerciseCount} exercices</span>
+            <span>{exerciseCount} exercices</span>
           </div>
           <button className="start-workout-btn">Commencer</button>
         </div>
       );
     }
 
-    // --- NOUVELLE CARTE DE PROGRAMME AMÉLIORÉE ---
     return (
       <div className="program-card client clickable" onClick={() => onSelectProgram(assignment)}>
-        <div className={`program-icon ${assignment.programs.type.toLowerCase()}`}>
-          {assignment.programs.type === 'Renforcement' ? '💪' : '❤️'}
+        {/* --- CORRECTION ICI --- */}
+        <div className={`program-icon ${primaryType.toLowerCase()}`}>
+          {primaryType === 'Renforcement' ? '💪' : '❤️'}
         </div>
         <div className="program-info">
           <h3>{assignment.programs.name}</h3>
           <p className="program-stats">
-            {assignment.programs.type} • {exerciseCount} exercices
+            {exerciseCount} exercices
           </p>
         </div>
         <div className={`program-status ${lastLogDate ? 'completed' : 'todo'}`}>
