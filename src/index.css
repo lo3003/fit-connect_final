@@ -167,7 +167,7 @@ input:focus, select:focus {
 .dashboard-content { flex-grow: 1; overflow-y: auto; }
 .loading-fullscreen, .loading-text { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light); }
 .loading-fullscreen { height: 100vh; }
-.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0;}
+.bottom-nav { display: flex; justify-content: space-around; padding: 8px 0; background-color: var(--card-background); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05); border-top: 1px solid var(--border-color); position: sticky; bottom: 0; z-index: 900; /* Une valeur de base */}
 .bottom-nav button { background: none; border: none; color: var(--text-light); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; padding: 4px 12px; border-radius: var(--border-radius); flex-grow: 1; }
 .bottom-nav button.active { color: var(--primary-color); }
 .bottom-nav button.active svg { fill: var(--primary-color); }
@@ -201,6 +201,7 @@ input:focus, select:focus {
     align-items: center;
     justify-content: center;
     padding: 1rem;
+    z-index: 1000; /* Valeur supérieure à celle du footer */
 }
 
 /* 2. La modale a une hauteur maximale et devient un conteneur flexible */
