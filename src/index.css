@@ -1,36 +1,32 @@
 /* src/index.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Nouveau :root suggéré */
 :root {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
 
-  --primary-color: #28a745; /* Un vert un peu plus standard et doux */
+  --primary-color: #28a745;
   --primary-hover: #218838;
-  --secondary-color: #f0fdf4; /* Un fond très léger pour les éléments secondaires */
+  --secondary-color: #f0fdf4;
   --secondary-hover: #dcfce7;
-  --background-color: #f8fafc; /* Fond général quasi-blanc */
+  --background-color: #f8fafc;
   --card-background: #ffffff;
-  --text-dark: #1e293b; /* Noir moins intense */
-  --text-light: #64748b; /* Gris pour le texte secondaire */
+  --text-dark: #1e293b;
+  --text-light: #64748b;
   --border-color: #e2e8f0;
   --error-color: #dc3545;
   --error-background: #fdf2f2;
-  --border-radius: 16px; /* Des coins un peu plus arrondis */
-  --box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* Ombre très subtile pour les petits éléments */
-  --box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.05); /* Ombre plus marquée pour les modales ou les cartes au survol */
+  --border-radius: 16px;
+  --box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --box-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -2px rgb(0 0 0 / 0.05);
 }
 
-
-
-
-html, body, #root, .app-container {
+/* --- STRUCTURE GLOBALE --- */
+html, body, #root {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Empêche le défilement global */
 }
 
 body {
@@ -44,6 +40,7 @@ body {
 .app-container {
   width: 100%;
   max-width: 420px;
+  height: 100%;
   margin: 0 auto;
   background-color: var(--card-background);
   box-shadow: var(--box-shadow-lg);
@@ -51,7 +48,7 @@ body {
   flex-direction: column;
 }
 
-/* --- STRUCTURE DE DÉFILEMENT MOBILE-FIRST --- */
+/* --- STRUCTURE DE DÉFILEMENT --- */
 .dashboard-layout {
     display: flex;
     flex-direction: column;
@@ -62,41 +59,36 @@ body {
 .dashboard-content {
     flex: 1;
     overflow-y: auto; /* C'est cette zone qui défilera */
-    -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
+    -webkit-overflow-scrolling: touch;
 }
 
 .screen {
   padding: 24px 28px;
   display: flex;
   flex-direction: column;
-  min-height: 100%; /* S'assure que le .screen prend au moins toute la hauteur visible */
+  min-height: 100%;
 }
-/* Pour les écrans sans barre de navigation, le contenu peut aller jusqu'en bas */
-.screen:not(.has-nav) {
-    padding-bottom: 24px;
-}
-/* Pour les écrans avec barre de navigation, on ajoute de l'espace en bas */
 .screen.has-nav {
     padding-bottom: 90px;
 }
 
+/* --- TEXTES & ÉLÉMENTS DE BASE --- */
+h1 { font-size: 28px; text-align: left; margin: 0; font-weight: 700; }
+h2 { font-size: 24px; text-align: left; margin: 0; font-weight: 600; }
+h3 { font-size: 20px; text-align: left; margin: 0; font-weight: 600; }
+h4 { font-size: 16px; text-align: left; margin: 0; font-weight: 600; }
+p { text-align: left; color: var(--text-light); margin: 8px 0 24px 0; }
+.subtitle { color: var(--text-light); font-size: 16px; text-align: left; margin: 4px 0 0 0; }
 
-/* ... (le reste de votre CSS pour les composants, boutons, etc. reste identique) ... */
-/* ... Collez ici tout votre CSS existant à partir de h1, h2, p ... */
-
-
-
-
-
-
-h1 { font-size: 28px; text-align: center; margin: 0; }
-h2 { font-size: 24px; text-align: center; margin: 0; }
-p { text-align: center; color: var(--text-light); margin: 8px 0 24px 0; }
 .content-centered {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
+}
+.content-centered h1, .content-centered h2, .content-centered p {
+    text-align: center;
 }
 
 .button-group {
@@ -109,16 +101,19 @@ p { text-align: center; color: var(--text-light); margin: 8px 0 24px 0; }
 
 button {
   width: 100%;
-  padding: 16px;
+  padding: 14px 24px;
   border: none;
   border-radius: var(--border-radius);
   background-color: var(--primary-color);
   color: white;
   font-size: 16px;
   font-weight: 500;
-  padding: 14px 24px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 button:hover { background-color: var(--primary-hover); }
 button:active { transform: scale(0.98); }
@@ -131,6 +126,17 @@ button.secondary {
 }
 button.secondary:hover { background-color: var(--secondary-color);}
 
+button.danger {
+  background-color: var(--error-background);
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+}
+button.danger:hover {
+  background-color: var(--error-color);
+  color: white;
+}
+
+/* --- FORMULAIRES --- */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -138,23 +144,28 @@ button.secondary:hover { background-color: var(--secondary-color);}
   margin-top: 24px;
 }
 
-input, select {
+input, select, textarea {
   width: 100%;
   padding: 14px;
   border-radius: var(--border-radius);
   font-size: 16px;
   transition: border-color 0.2s, box-shadow 0.2s;
-  background-color: var(--background-color); /* Fond légèrement grisé */
+  background-color: var(--background-color);
   border: 1px solid var(--border-color);
+  font-family: 'Inter', sans-serif;
 }
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px var(--secondary-hover);
   background-color: #fff;
 }
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
 
-.auth-toggle { font-size: 14px; margin-top: 16px; }
+.auth-toggle { font-size: 14px; margin-top: 16px; text-align: center;}
 .auth-toggle a { color: var(--primary-color); font-weight: 600; text-decoration: none; }
 .back-link { color: var(--text-dark); text-decoration: none; font-weight: 500; align-self: flex-start; margin-bottom: 20px; }
 .form-options { display: flex; justify-content: space-between; align-items: center; font-size: 14px; margin-top: -8px; margin-bottom: 20px; }
@@ -162,11 +173,10 @@ input:focus, select:focus {
 .checkbox-container input { width: 16px; height: 16px; margin-right: 8px; accent-color: var(--primary-color); }
 .error-message { color: var(--error-color); background-color: var(--error-background); border: 1px solid var(--error-color); padding: 10px; border-radius: var(--border-radius); text-align: center; font-size: 14px; margin-bottom: 16px; }
 
-/* --- Styles du Tableau de Bord --- */
-.dashboard-layout { display: flex; flex-direction: column; height: 100vh; background-color: var(--background-color); }
-.dashboard-content { flex-grow: 1; overflow-y: auto; }
+/* --- NAVIGATION & EN-TÊTES --- */
 .loading-fullscreen, .loading-text { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-light); }
 .loading-fullscreen { height: 100vh; }
+
 .bottom-nav { 
     display: flex; 
     justify-content: space-around; 
@@ -176,231 +186,48 @@ input:focus, select:focus {
     border-top: 1px solid var(--border-color); 
     position: sticky; 
     bottom: 0; 
-    /* On définit une couche de base pour la navigation */
     z-index: 900; 
 }
 .bottom-nav button { background: none; border: none; color: var(--text-light); display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; padding: 4px 12px; border-radius: var(--border-radius); flex-grow: 1; }
 .bottom-nav button.active { color: var(--primary-color); }
 .bottom-nav button.active svg { fill: var(--primary-color); }
 .bottom-nav button:not(.active) svg { stroke: var(--text-light); }
+
 .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .page-header h1 { text-align: left; }
-.add-button { width: 44px; height: 44px; font-size: 28px; line-height: 44px; padding: 0; border-radius: 50%; }
+.add-button { 
+    width: 44px; height: 44px; font-size: 28px; padding: 0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; line-height: 1;
+}
 .empty-state { text-align: center; margin-top: 40px; color: var(--text-light); }
-.client-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; }
-.client-card { background-color: var(--card-background); padding: 20px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); border: 1px solid var(--border-color); }
-.client-card h3 { margin: 0 0 8px 0; text-align: left; font-size: 18px; }
-.client-card p { margin: 0; text-align: left; font-size: 14px; color: var(--text-light); }
 
-/* --- Styles pour la Modale --- */
-/* src/index.css */
-/* ... (votre CSS existant) ... */
-
-/* --- STYLES CORRIGÉS POUR LA MODALE SCROLLABLE --- */
-/* 1. L'overlay reste un simple fond qui centre son contenu */
-.modal-content {
-    background: white;
-    border-radius: var(--border-radius);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 500px;
-    animation: slideIn 0.3s ease;
-    
-    /* La magie est ici : */
-    max-height: 90vh; /* La modale ne dépassera jamais 90% de la hauteur de l'écran */
-    display: flex; 
-    flex-direction: column; /* Ses enfants (header, form) s'aligneront verticalement */
-    overflow: hidden; /* Empêche le contenu de déborder visuellement des coins arrondis */
-}
-
-.modal-header {
-    padding: 24px 24px 0 24px; /* On ajuste le padding pour qu'il ne soit pas dans la zone de scroll */
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0; /* Empêche le header de rétrécir */
-}
-.modal-header h2 { margin: 0; text-align: left; }
-.close-button { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-light); padding: 0; width: auto; }
-
-
-/* 3. Le formulaire devient la zone de défilement principale */
-.modal-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    
-    /* C'est cette partie qui défilera si le contenu est trop long */
-    overflow-y: auto; 
-    -webkit-overflow-scrolling: touch; /* Défilement fluide sur iOS */
-    padding: 0 24px; /* On ajoute le padding horizontal ici */
-    
-    flex: 1; /* Le formulaire prendra toute la place verticale disponible */
-}
-
-/* On s'assure que le dernier bouton a de l'espace en bas */
-.modal-form button:last-child {
-    margin-top: 8px;
-    margin-bottom: 24px;
-}
-
-/* ... (le reste de votre CSS) ... */
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-header h2 { margin: 0; text-align: left; }
-.close-button { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-light); padding: 0; width: auto; }
-.modal-form { display: flex; flex-direction: column; gap: 16px; }
-.form-row { display: flex; gap: 12px; }
-.form-row input { flex: 1; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-
-.client-card, .program-card {
-  background-color: var(--card-background);
-  padding: 24px; /* Augmenter l'espacement interne */
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  border: 1px solid transparent; /* Rendre la bordure transparente par défaut */
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Ajouter une transition */
-}
-
-.client-card.clickable:hover, .program-card.clickable:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--box-shadow-lg);
-}
-
-/* --- Styles pour la page de détail --- */
-.detail-card {
-  background-color: var(--card-background);
-  padding: 24px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  margin-top: 20px;
-}
-.client-code {
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
-  padding: 4px 8px;
-  border-radius: 6px;
-  display: inline-block;
-  font-size: 14px;
-  margin-bottom: 24px;
-}
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-.info-grid div {
-  text-align: left;
-}
-.info-grid span {
-  font-size: 12px;
-  color: var(--text-light);
-  display: block;
-  margin-bottom: 4px;
-}
-.info-grid p {
-  font-size: 16px;
-  color: var(--text-dark);
-  margin: 0;
-  text-align: left;
-}
-
-/* --- Bouton Danger --- */
-button.danger {
-  background-color: var(--error-background);
-  color: var(--error-color);
-}
-button.danger:hover {
-  background-color: #f8d7da;
-}
-
-/* --- Modale de Confirmation --- */
-.modal-content.confirm-modal {
-  max-width: 400px;
-}
-.confirm-message {
-  text-align: center;
-  margin-bottom: 24px;
-  line-height: 1.5;
-}
-.confirm-actions {
-  display: flex;
-  gap: 12px;
-}
-
-
-
-/* --- Styles pour les Notifications (Toasts) --- */
-.toast-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.toast {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  color: white;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.4s ease;
-}
-
-.toast.visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.toast.success {
-  background-color: var(--primary-color);
-}
-
-.toast.error {
-  background-color: var(--error-color);
-}
-
-.toast-icon {
-  margin-right: 12px;
-  display: flex;
-  align-items: center;
-}
-
-.toast p {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: white;
-  text-align: left;
-}
-
-
-/* --- Page Programmes --- */
-.program-list {
+/* --- LISTES (Clients, Programmes) --- */
+.client-list, .program-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding-bottom: 24px;
 }
-.program-card {
+.client-card, .program-card {
+  background-color: var(--card-background);
+  padding: 24px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   align-items: center;
   gap: 16px;
-  background-color: var(--card-background);
-  padding: 16px;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  border: 1px solid var(--border-color);
 }
+.client-card h3, .program-card h3 { margin: 0 0 4px 0; text-align: left; font-size: 18px; }
+.client-card p, .program-card p { margin: 0; text-align: left; font-size: 14px; color: var(--text-light); }
+
+.client-card.clickable, .program-card.clickable { cursor: pointer; }
+.client-card.clickable:hover, .program-card.clickable:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--box-shadow-lg);
+}
+
 .program-icon {
   width: 48px;
   height: 48px;
@@ -412,488 +239,80 @@ button.danger:hover {
 }
 .program-icon.renforcement { background-color: #e8f6f3; }
 .program-icon.cardio { background-color: #fdeded; }
+.program-info { flex-grow: 1; }
 
-.program-info h3 { margin: 0 0 4px 0; text-align: left; font-size: 18px; }
-.program-info p { margin: 0; text-align: left; font-size: 14px; color: var(--text-light); }
+/* --- MODALE (FINALE ET CORRIGÉE) --- */
 
-/* --- Sélecteur de type de programme --- */
-.type-selector {
-  display: flex;
-  gap: 12px;
-  width: 100%;
-}
-.type-selector button {
-  flex: 1;
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
-  border: 2px solid var(--border-color);
-  font-weight: 500;
-}
-.type-selector button.active {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.3s ease;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 1000; /* Supérieur au z-index du footer (900) */
 }
 
-
-/* --- Styles pour le formulaire d'exercice --- */
-.modal-form textarea {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: 16px;
-  font-family: 'Inter', sans-serif;
-  background-color: #fff;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  resize: vertical;
-  min-height: 80px;
-}
-.modal-form textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--secondary-color);
-}
-.small-info {
-  font-size: 12px;
-  text-align: center;
-  color: var(--text-light);
-  margin-top: -8px;
+.modal-content {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 500px;
+    animation: slideIn 0.3s ease;
+    
+    max-height: 90vh; /* La modale ne dépassera jamais 90% de la hauteur de l'écran */
+    display: flex; 
+    flex-direction: column;
+    overflow: hidden; /* Empêche le contenu de déborder visuellement */
 }
 
+.modal-header {
+    padding: 24px 24px 0 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0; /* Empêche le header de rétrécir */
+}
+.modal-header h2 { margin: 0; text-align: left; }
+.close-button { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-light); padding: 0; width: auto; }
 
-/* --- Styles pour les cartes d'exercices interactives --- */
-.exercise-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch;
+    padding: 0 24px;
+    
+    flex: 1; /* Le formulaire prendra toute la place verticale disponible */
 }
-.exercise-card-info {
-  flex-grow: 1;
-}
-.exercise-card-actions {
-  position: relative;
-}
-.options-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  color: var(--text-light);
-}
-.options-button:hover {
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
+.modal-form button:last-child {
+    margin-top: 8px;
+    margin-bottom: 24px;
 }
 
-.options-menu {
-  position: absolute;
-  top: 45px;
-  right: 0;
+.form-row { display: flex; gap: 12px; }
+.form-row input { flex: 1; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* --- Page Détail Client --- */
+.detail-card {
   background-color: var(--card-background);
+  padding: 24px;
   border-radius: var(--border-radius);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border: 1px solid var(--border-color);
-  z-index: 10;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.options-menu button {
-  background-color: transparent;
-  color: var(--text-dark);
-  text-align: left;
-  padding: 10px 16px;
-  border-radius: 0;
-  width: 120px;
-  font-weight: 500;
-}
-.options-menu button:hover {
-  background-color: var(--secondary-color);
-}
-
-/* --- Styles pour l'en-tête de la page de détail --- */
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  box-shadow: var(--box-shadow);
   margin-top: 20px;
 }
-.detail-header h1, .detail-header p {
-  text-align: left;
-}
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-.icon-button {
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 20px;
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
-}
-.icon-button:hover {
-  background-color: var(--secondary-hover);
-}
-
-
-/* --- Bouton pour retirer un programme --- */
-.unassign-button {
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  font-size: 24px;
-  line-height: 36px;
-  border-radius: 50%;
-  flex-shrink: 0; /* Empêche le bouton de rétrécir */
-}
-.unassign-button:hover {
-  background-color: var(--error-background);
-  color: var(--error-color);
-}
-
-
-/* --- Styles pour la vue Programme Client --- */
-.assigned-program-list {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-.program-container > h2 {
-  text-align: left;
-  margin-bottom: 4px;
-}
-.program-container > .subtitle {
-  text-align: left;
-  margin-top: 0;
-}
-.exercise-card.client-view {
-  border-left: 4px solid var(--primary-color);
-}
-
-
-/* --- Styles améliorés pour la vue client --- */
-.program-card.client {
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-}
-
-.program-card.client .program-info {
-  flex-grow: 1; /* Pousse la flèche à droite */
-}
-
-.progress-indicator {
-  margin: 4px 0 0 0 !important;
-  font-size: 13px !important;
-  color: var(--text-light) !important;
-  text-align: left !important;
-}
-
-.arrow-indicator {
-  font-size: 24px;
-  color: var(--border-color);
-  transition: color 0.2s ease;
-}
-
-.program-card.client:hover .arrow-indicator {
-  color: var(--primary-color);
-}
-
-
-/* --- Styles pour la page de détail client --- */
-.exercise-list.client-detail-list {
-  gap: 12px;
-}
-.exercise-card.client-detail {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-}
-
-.exercise-number {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: var(--secondary-color);
-  color: var(--primary-color);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.exercise-status {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid var(--border-color);
-  flex-shrink: 0;
-}
-
-/* --- Styles pour la modale de feedback --- */
-.feedback-question {
-  text-align: center;
-  font-weight: 500;
-  margin-bottom: 20px;
-}
-.rating-selector {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-.rating-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 10px;
-  border-radius: var(--border-radius);
-  border: 2px solid transparent;
-  transition: all 0.2s ease;
-}
-.rating-option:hover {
-  background-color: var(--secondary-color);
-}
-.rating-option.selected {
-  border-color: var(--primary-color);
-  background-color: var(--secondary-color);
-}
-.rating-emoji {
-  font-size: 32px;
-}
-.rating-label {
-  font-size: 12px;
-  font-weight: 500;
-}
-.photo-upload-label {
-  display: block;
-  width: 100%;
-  text-align: center;
-  padding: 14px;
-  border: 2px dashed var(--border-color);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.photo-upload-label:hover {
-  border-color: var(--primary-color);
-  background-color: var(--secondary-color);
-}
-
-/* --- Styles pour les exercices cochés --- */
-.exercise-card.client-detail.checked {
-  background-color: var(--secondary-color);
-  border-color: var(--primary-color);
-}
-.exercise-status.checked {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-}
-.progress-indicator.completed {
-  color: var(--primary-color) !important;
-  font-weight: 500;
-}
-
-
-/* --- Styles pour l'historique d'activité du coach --- */
-.feedback-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-bottom: 24px;
-}
-.feedback-card {
-  background-color: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  padding: 16px;
-  box-shadow: var(--box-shadow);
-}
-.feedback-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-.feedback-header h4 {
-  margin: 0;
-  font-size: 16px;
-}
-.feedback-header span {
-  font-size: 12px;
-  color: var(--text-light);
-}
-.feedback-rating {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-.feedback-notes {
-  background-color: var(--background-color);
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-style: italic;
-  margin: 0 0 12px 0;
-  text-align: left;
-  line-height: 1.5;
-}
-.feedback-photo-thumbnail {
-  width: 70px;
-  height: 70px;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-}
-.feedback-photo-thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.2s ease;
-}
-.feedback-photo-thumbnail:hover img {
-  transform: scale(1.1);
-}
-
-/* --- Styles pour la Lightbox --- */
-.lightbox-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  animation: fadeIn 0.3s ease;
-}
-.lightbox-content {
-  position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
-}
-.lightbox-image {
-  max-width: 100%;
-  max-height: 100%;
-  display: block;
-  border-radius: 8px;
-}
-.lightbox-close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0,0,0,0.5);
-  color: white;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 28px;
-  line-height: 40px;
-  cursor: pointer;
-}
-
-
-/* src/index.css */
-
-/* ... (Tout votre code CSS existant) ... */
-
-
-/* --- STYLES POUR LA PAGE D'ÉDITION DE PROGRAMME (ProgramEditorPage) --- */
-
-/* Conteneur principal pour les infos du programme */
-.program-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 16px; /* Espace entre le titre, l'input et le sélecteur */
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--border-color); /* Ligne de séparation */
-  margin-bottom: 24px;
-}
-
-.program-form-group h2 {
-  font-size: 28px;
-  text-align: left;
-}
-
-/* Conteneur pour le formulaire d'ajout d'exercice */
-.add-exercise-form {
-  margin-top: 24px;
-  padding: 20px;
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  display: flex;
-  flex-direction: column;
-  gap: 16px; /* Espace entre les champs */
-}
-
-.add-exercise-form h4 {
-  text-align: left;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* Ajustement spécifique pour le bouton "Supprimer" de l'exercice */
-.exercise-card .options-button {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  background-color: var(--secondary-color);
-  color: var(--text-dark);
-  font-size: 18px; /* Ajuste la taille de l'icône emoji */
-}
-
-.exercise-card .options-button:hover {
-  background-color: var(--error-background);
-  color: var(--error-color);
-}
-
-/* ... (Tout votre code CSS existant, y compris le bloc précédent) ... */
-
-
-/* --- STYLES POUR LES CHAMPS DE FORMULAIRE AVEC LABELS --- */
-
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px; /* Espace entre le label et l'input */
-  flex: 1; /* Permet aux champs de bien se répartir dans un .form-row */
-}
-
-.form-field label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-dark);
-  text-align: left;
-}
-
-
-/* ... (Tout votre code CSS existant) ... */
-
-
-/* --- STYLES POUR LE CODE CLIENT COPIABLE --- */
 .client-code-wrapper {
   background-color: var(--secondary-color);
   color: var(--primary-color);
@@ -909,682 +328,193 @@ button.danger:hover {
   transition: background-color 0.2s ease;
   border: 1px solid var(--secondary-hover);
 }
+.client-code-wrapper:hover { background-color: var(--secondary-hover); }
+.client-code-wrapper span { font-weight: 500; }
+.client-code-wrapper svg { stroke: var(--primary-color); }
 
-.client-code-wrapper:hover {
-  background-color: var(--secondary-hover);
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
+.info-grid div { text-align: left; }
+.info-grid span { font-size: 12px; color: var(--text-light); display: block; margin-bottom: 4px; }
+.info-grid p { font-size: 16px; color: var(--text-dark); margin: 0; text-align: left; }
+.info-grid.full { grid-template-columns: 1fr 1fr; }
+.info-grid .full-width { grid-column: 1 / -1; margin-top: 8px; }
+.info-grid .full-width p { white-space: pre-wrap; }
 
-.client-code-wrapper span {
+.unassign-button {
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 20px;
   font-weight: 500;
-}
-
-.client-code-wrapper svg {
-  stroke: var(--primary-color);
-}
-
-
-/* ... (Tout votre code CSS existant) ... */
-
-
-/* --- CORRECTION CENTRAGE DES BOUTONS D'ACTION --- */
-
-.add-button,
-.unassign-button,
-.exercise-card .options-button {
-  /* On utilise Flexbox pour un centrage parfait */
+  border-radius: 50%;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  
-  /* On réinitialise line-height pour éviter les conflits */
-  line-height: 1; 
+  line-height: 1;
+}
+.unassign-button:hover {
+  background-color: var(--error-background);
+  color: var(--error-color);
 }
 
-/* On ajuste la taille de la police pour le bouton X pour qu'il soit moins agressif */
-.unassign-button {
-    font-size: 20px;
-    font-weight: 500;
-}
+/* --- Modale de Confirmation --- */
+.modal-content.confirm-modal { max-width: 400px; }
+.confirm-message { text-align: center; margin-bottom: 24px; line-height: 1.5; }
+.confirm-actions { display: flex; gap: 12px; }
 
+/* --- Notifications (Toasts) --- */
+.toast-container { position: fixed; top: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 12px; }
+.toast { display: flex; align-items: center; padding: 12px 16px; border-radius: var(--border-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.15); color: white; opacity: 0; transform: translateX(100%); transition: all 0.4s ease; }
+.toast.visible { opacity: 1; transform: translateX(0); }
+.toast.success { background-color: var(--primary-color); }
+.toast.error { background-color: var(--error-color); }
+.toast-icon { margin-right: 12px; display: flex; align-items: center; }
+.toast p { margin: 0; font-size: 14px; font-weight: 500; color: white; text-align: left; }
 
-/* ... (votre CSS existant) ... */
+/* --- Sélecteur de type --- */
+.type-selector { display: flex; gap: 12px; width: 100%; }
+.type-selector button { flex: 1; background-color: var(--secondary-color); color: var(--text-dark); border: 2px solid var(--border-color); font-weight: 500; }
+.type-selector button.active { background-color: var(--primary-color); color: white; border-color: var(--primary-color); }
 
-/* --- NOUVEAUX STYLES POUR L'INTERFACE CLIENT --- */
+/* --- Formulaires avec Labels --- */
+.form-divider { border: none; border-top: 1px solid var(--border-color); margin: 8px 0; }
+.form-field { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.form-field label { font-size: 14px; font-weight: 500; color: var(--text-dark); text-align: left; }
 
-.screen.client-dashboard {
-  background-color: var(--background-color);
-}
-
-.client-header {
-  margin-bottom: 24px;
-}
-.client-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-}
-.client-header .subtitle {
-  margin-top: 4px;
-  font-size: 16px;
-}
+/* --- Interface Client --- */
+.screen.client-dashboard { background-color: var(--background-color); }
+.client-header { margin-bottom: 24px; }
+.client-header h1 { font-size: 28px; font-weight: 700; }
+.client-header .subtitle { margin-top: 4px; font-size: 16px; }
 
 .featured-program-card {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
-  color: white;
-  padding: 24px;
-  border-radius: 24px;
-  margin-bottom: 32px;
+  color: white; padding: 24px; border-radius: 24px; margin-bottom: 32px;
   box-shadow: 0 10px 20px -5px rgba(40, 167, 69, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
+  display: flex; align-items: center; justify-content: space-between; cursor: pointer;
 }
-
-.featured-program-info p {
-  margin: 0;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
-  text-align: left;
-}
-.featured-program-info h3 {
-  color: white;
-  font-size: 22px;
-  font-weight: 600;
-  margin: 4px 0;
-  text-align: left;
-}
-.featured-program-info span {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
+.featured-program-info p { margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.8); text-align: left; }
+.featured-program-info h3 { color: white; font-size: 22px; font-weight: 600; margin: 4px 0; text-align: left; }
+.featured-program-info span { font-size: 14px; color: rgba(255, 255, 255, 0.9); }
 .start-workout-btn {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-  border-radius: 50%;
-  width: 70px;
-  height: 70px;
-  padding: 0;
-  font-weight: 600;
-  flex-shrink: 0;
-  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.2); color: white; border-radius: 50%;
+  width: 70px; height: 70px; padding: 0; font-weight: 600; flex-shrink: 0;
+  border: 2px solid white; font-size: 16px; line-height: 1.2; padding-top: 2px;
 }
+.other-programs-title { font-size: 20px; font-weight: 600; margin-bottom: 16px; text-align: left; }
 
-.other-programs-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  text-align: left;
-}
+.program-card.client { flex-direction: row; align-items: center; gap: 16px; }
+.program-card.client .program-info { flex-grow: 1; }
+.program-stats { font-size: 14px; color: var(--text-light); margin: 4px 0 0 0 !important; padding: 0; text-align: left !important; }
+.program-status { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: auto; }
+.program-status.todo { background-color: var(--secondary-color); color: var(--primary-color); }
+.program-status.completed { background-color: var(--primary-color); color: white; }
 
-.start-workout-btn {
-  font-size: 10px; /* Réduit la taille de la police */
-  line-height: 1.2; /* Ajuste la hauteur de ligne pour un meilleur centrage */
-  padding-top: 2px; /* Petit ajustement pour le centrage vertical si besoin */
-}
+/* --- Mode Séance Client --- */
+.screen.workout-focus-mode { padding: 0; background-color: var(--card-background); justify-content: space-between; height: 100%; }
+.workout-header { padding: 24px 28px 16px 28px; width: 100%; }
+.back-link-workout { color: var(--text-light); text-decoration: none; font-size: 16px; }
+.workout-progress { margin-top: 16px; }
+.workout-progress p { text-align: left; margin: 0 0 8px 0; font-size: 14px; font-weight: 500; color: var(--text-dark); }
+.progress-bar-container { width: 100%; height: 8px; background-color: var(--border-color); border-radius: 4px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background-color: var(--primary-color); border-radius: 4px; transition: width 0.3s ease-in-out; }
 
+.current-exercise-display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+.exercise-name { font-size: 36px; font-weight: 700; text-align: center; margin: 0; line-height: 1.2; }
+.exercise-details { display: flex; align-items: center; gap: 20px; margin-top: 32px; }
+.detail-block { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; }
+.detail-block span { font-size: 64px; font-weight: 700; color: var(--primary-color); line-height: 1; }
+.detail-block label { font-size: 16px; color: var(--text-light); margin-top: 8px; }
+.detail-separator { font-size: 48px; color: var(--border-color); font-weight: 300; }
+.exercise-details.cardio .detail-block span { font-size: 48px; }
+.exercise-details.cardio .detail-block:last-child span { color: var(--text-dark); }
+.exercise-photo-container { width: 100%; max-width: 250px; height: 250px; border-radius: var(--border-radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--box-shadow-lg); }
+.exercise-photo-container img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ... (votre CSS existant) ... */
+.workout-navigation { display: flex; gap: 16px; padding: 24px 28px; width: 100%; border-top: 1px solid var(--border-color); background-color: var(--card-background); }
+.next-rest-display { text-align: center; padding: 16px; background-color: var(--secondary-color); }
+.next-rest-display p { margin: 0; font-size: 16px; color: var(--text-dark); font-weight: 500; text-align: center; }
 
+/* --- Mode Repos Client --- */
+.rest-timer-view { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 24px 28px; background-color: var(--background-color); }
+.timer-info { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.timer-info h2 { font-size: 24px; font-weight: 600; color: var(--text-light); margin-bottom: 24px; text-align: center; }
+.circular-timer { position: relative; width: 200px; height: 200px; margin: 0 auto; }
+.circular-timer svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.timer-bg { fill: none; stroke: var(--border-color); stroke-width: 8; }
+.timer-progress { fill: none; stroke: var(--primary-color); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.3s ease-out; }
+.timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 64px; font-weight: 700; color: var(--text-dark); }
+.next-exercise-preview { text-align: center; padding: 20px; background-color: var(--card-background); border-radius: var(--border-radius); margin-bottom: 16px; border: 1px solid var(--border-color); }
+.next-exercise-preview p { margin: 0; color: var(--text-light); font-size: 14px; text-align: center; }
+.next-exercise-preview h3 { margin: 4px 0 0 0; font-size: 18px; font-weight: 600; color: var(--text-dark); text-align: center; }
 
-/* --- STYLES AMÉLIORÉS POUR LES CARTES DE PROGRAMMES CLIENTS --- */
+/* --- Éditeur de Programme Coach --- */
+.program-form-group { display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+.program-form-group h2 { font-size: 28px; text-align: left; }
 
-.program-card.client {
-    align-items: center; /* S'assure que tout est bien aligné verticalement */
-}
+.exercise-list.editor { display: flex; flex-direction: column; gap: 12px; }
+.drag-handle { display: flex; align-items: center; justify-content: center; padding: 0 12px; cursor: grab; color: var(--border-color); align-self: stretch; }
+.drag-handle:hover { color: var(--text-dark); }
 
-.program-stats {
-    font-size: 14px;
-    color: var(--text-light);
-    margin: 4px 0 0 0 !important;
-    padding: 0;
-    text-align: left !important;
-}
-
-.program-status {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-left: auto; /* Pousse l'élément tout à droite */
-}
-
-.program-status.todo {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
-}
-
-.program-status.completed {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-
-/* ... (votre CSS existant) ... */
-
-/* --- STYLES POUR LE "MODE FOCUS" DE LA SÉANCE CLIENT --- */
-
-.screen.workout-focus-mode {
-  padding: 0;
-  background-color: var(--card-background);
-  justify-content: space-between;
-  height: 100%;
-}
-
-.workout-header {
-  padding: 24px 28px 16px 28px;
-  width: 100%;
-}
-
-.back-link-workout {
-  color: var(--text-light);
-  text-decoration: none;
-  font-size: 16px;
-}
-
-.workout-progress {
-  margin-top: 16px;
-}
-.workout-progress p {
-  text-align: left;
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-dark);
-}
-
-.progress-bar-container {
-  width: 100%;
-  height: 8px;
-  background-color: var(--border-color);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background-color: var(--primary-color);
-  border-radius: 4px;
-  transition: width 0.3s ease-in-out;
-}
-
-.current-exercise-display {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  text-align: center;
-}
-
-.exercise-name {
-  font-size: 36px;
-  font-weight: 700;
-  text-align: center;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.exercise-details {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-top: 32px;
-}
-
-.detail-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 120px;
-}
-
-.detail-block span {
-  font-size: 64px;
-  font-weight: 700;
-  color: var(--primary-color);
-  line-height: 1;
-}
-
-.detail-block label {
-  font-size: 16px;
-  color: var(--text-light);
-  margin-top: 8px;
-}
-
-.detail-separator {
-  font-size: 48px;
-  color: var(--border-color);
-  font-weight: 300;
-}
-
-.exercise-details.cardio .detail-block span {
-  font-size: 48px;
-}
-.exercise-details.cardio .detail-block:last-child span {
-    color: var(--text-dark);
-}
-
-
-.workout-navigation {
-  display: flex;
-  gap: 16px;
-  padding: 24px 28px;
-  width: 100%;
-  border-top: 1px solid var(--border-color);
-  background-color: var(--card-background);
-}
-
-
-
-/* ... (votre CSS existant) ... */
-
-/* --- STYLES POUR L'ÉDITEUR D'EXERCICE ET LES PHOTOS --- */
-
-/* Amélioration de la liste d'exercices dans l'éditeur */
-.exercise-list.editor {
-    gap: 16px;
-}
 .exercise-card.editor {
-    cursor: pointer;
-    gap: 16px;
-    transition: all 0.2s ease;
+    flex-direction: column; align-items: stretch; padding: 0;
+    border: 1px solid var(--border-color); border-radius: var(--border-radius);
+    background-color: var(--card-background);
 }
-.exercise-card.editor:hover {
-    background-color: var(--secondary-color);
-    border-color: var(--primary-color);
-}
-.exercise-thumbnail {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
-    object-fit: cover;
-    flex-shrink: 0;
-}
+.exercise-content-wrapper { display: flex; align-items: center; padding: 8px 12px; }
+.exercise-card-main-content { flex-grow: 1; display: flex; align-items: center; gap: 16px; cursor: pointer; padding: 8px; border-radius: var(--border-radius); }
+.exercise-card-main-content:hover { background-color: var(--secondary-color); }
+.exercise-type-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.exercise-type-icon.renforcement { background-color: #e8f6f3; }
+.exercise-type-icon.cardio { background-color: #fdeded; }
+.exercise-card-info p { font-size: 14px; color: var(--text-light); margin-top: 4px !important; }
+
 .delete-icon {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    background: none; border: none; font-size: 20px; cursor: pointer;
+    padding: 8px; border-radius: 50%; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center; line-height: 1;
 }
-.delete-icon:hover {
-    background-color: var(--error-background);
-    color: var(--error-color);
-}
+.delete-icon:hover { background-color: var(--error-background); color: var(--error-color); }
 
+.section-header-item { display: flex; align-items: center; width: 100%; padding: 8px 12px; background-color: var(--background-color); border-radius: var(--border-radius); }
+.section-title { flex-grow: 1; text-align: left; font-size: 16px; font-weight: 600; color: var(--text-dark); padding: 0 8px; }
 
-/* Styles pour la modale d'édition d'exercice */
-.photo-upload-label.interactive {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    border-style: dashed;
-}
-.photo-upload-label.interactive:hover {
-    border-color: var(--primary-color);
-    background-color: var(--secondary-color);
-}
-.photo-preview-thumb {
-    width: 70px;
-    height: 70px;
-    border-radius: 8px;
-    object-fit: cover;
-}
+.exercise-card.editor.indented { margin-left: 20px; border-left: 2px solid var(--primary-color); }
 
-/* Photo dans la vue client "mode focus" */
-.exercise-photo-container {
-    width: 100%;
-    max-width: 250px;
-    height: 250px;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    margin-bottom: 24px;
-    box-shadow: var(--box-shadow-lg);
-}
-.exercise-photo-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.rest-time-indicator { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--text-light); background-color: var(--background-color); padding: 8px 20px; border-top: 1px solid var(--border-color); }
+.rest-time-indicator span { text-align: left; }
 
-/* ... (votre CSS existant) ... */
+/* --- Bibliothèque d'Exercices --- */
+.library-list { max-height: 40vh; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
+.library-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border-color); }
+.library-item:last-child { border-bottom: none; }
+.library-item:hover { background-color: var(--secondary-color); }
+.library-item.selected { background-color: var(--primary-color); color: white; font-weight: 500; }
+.library-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--primary-color); pointer-events: none; }
 
-/* --- STYLES POUR LE DRAG & DROP ET PROGRAMMES MIXTES --- */
+.modal-content .button-group button.secondary { border-color: var(--border-color); color: var(--text-dark); }
+.modal-content .button-group button.secondary:hover { background-color: var(--secondary-hover); border-color: var(--secondary-hover); }
 
-.drag-handle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 12px;
-    cursor: grab;
-    color: var(--border-color);
-    align-self: stretch;
-}
-.drag-handle:hover {
-    color: var(--text-dark);
-}
+/* --- Historique & Lightbox --- */
+.feedback-list { display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; }
+.feedback-card { background-color: var(--card-background); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 16px; box-shadow: var(--box-shadow); }
+.feedback-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.feedback-header h4 { margin: 0; font-size: 16px; }
+.feedback-header span { font-size: 12px; color: var(--text-light); }
+.feedback-rating { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 12px; }
+.feedback-notes { background-color: var(--background-color); padding: 12px; border-radius: 8px; font-size: 14px; font-style: italic; margin: 0 0 12px 0; text-align: left; line-height: 1.5; }
+.feedback-photo-thumbnail { width: 70px; height: 70px; border-radius: 8px; overflow: hidden; cursor: pointer; }
+.feedback-photo-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; }
+.feedback-photo-thumbnail:hover img { transform: scale(1.1); }
 
-.exercise-card.editor {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    gap: 0;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    background-color: var(--card-background);
-}
-
-.exercise-card-main-content {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: var(--border-radius);
-}
-
-.exercise-type-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-}
-.exercise-type-icon.renforcement { background-color: #e8f6f3; }
-.exercise-type-icon.cardio { background-color: #fdeded; }
-
-.exercise-card-info p {
-    font-size: 14px;
-    color: var(--text-light);
-    margin-top: 4px !important;
-}
-
-
-/* ... (tout votre code CSS existant) ... */
-
-/* --- STYLES POUR L'ÉDITEUR DE PROGRAMME AVEC SECTIONS --- */
-
-.exercise-list.editor {
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Espace entre chaque élément (exercice ou section) */
-}
-
-.drag-handle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 12px;
-    cursor: grab;
-    color: var(--border-color);
-    align-self: stretch;
-}
-.drag-handle:hover {
-    color: var(--text-dark);
-}
-
-.exercise-card.editor {
-    display: flex;
-    align-items: center;
-    /* --- MODIFICATION ICI --- */
-    padding: 8px; /* Ancien: padding: 12px; */
-    gap: 0;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    background-color: var(--card-background);
-}
-
-.exercise-card-main-content {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: var(--border-radius);
-}
-
-.exercise-type-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
-}
-.exercise-type-icon.renforcement { background-color: #e8f6f3; }
-.exercise-type-icon.cardio { background-color: #fdeded; }
-
-.exercise-card-info p {
-    font-size: 14px;
-    color: var(--text-light);
-    margin-top: 4px !important;
-}
-
-/* Styles pour les sections */
-.section-header-item {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 8px 12px;
-    background-color: var(--background-color);
-    border-radius: var(--border-radius);
-}
-
-.section-title {
-    flex-grow: 1;
-    text-align: left;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-dark);
-    padding: 0 8px;
-}
-
-/* Style pour l'indentation des exercices sous une section */
-.exercise-card.editor.indented {
-    margin-left: 20px;
-    border-left: 2px solid var(--primary-color);
-}
-
-
-/* ... (tout votre code CSS existant) ... */
-
-/* --- STYLES POUR LE TEMPS DE REPOS --- */
-
-.exercise-card.editor {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
-}
-
-.exercise-content-wrapper {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-}
-
-.rest-time-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-light);
-    background-color: var(--background-color);
-    padding: 8px 20px;
-    border-top: 1px solid var(--border-color);
-}
-.rest-time-indicator span {
-    text-align: left;
-}
-
-
-.next-rest-display {
-    text-align: center;
-    padding: 16px;
-    background-color: var(--secondary-color);
-}
-
-.next-rest-display p {
-    margin: 0;
-    font-size: 16px;
-    color: var(--text-dark);
-    font-weight: 500;
-}
-
-
-/* ... (votre CSS existant) ... */
-
-/* --- STYLES POUR L'ÉCRAN DE REPOS ET LE TIMER --- */
-
-.rest-timer-view {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    padding: 24px 28px;
-    background-color: var(--background-color);
-}
-
-.timer-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.timer-info h2 {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--text-light);
-    margin-bottom: 24px;
-    text-align: center;
-}
-
-.circular-timer {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 0 auto;
-}
-
-.circular-timer svg {
-    transform: rotate(-90deg);
-    width: 100%;
-    height: 100%;
-}
-
-.timer-bg {
-    fill: none;
-    stroke: var(--border-color);
-    stroke-width: 8;
-}
-
-.timer-progress {
-    fill: none;
-    stroke: var(--primary-color);
-    stroke-width: 8;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.3s ease-out; /* Ancien: 1s linear */
-}
-
-.timer-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 64px;
-    font-weight: 700;
-    color: var(--text-dark);
-}
-
-.next-exercise-preview {
-    text-align: center;
-    padding: 20px;
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    margin-bottom: 16px;
-    border: 1px solid var(--border-color);
-}
-
-.next-exercise-preview p {
-    margin: 0;
-    color: var(--text-light);
-    font-size: 14px;
-    text-align: center;
-}
-
-.next-exercise-preview h3 {
-    margin: 4px 0 0 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-dark);
-    text-align: center;
-}
-
-/* --- STYLES POUR LA BIBLIOTHÈQUE D'EXERCICES --- */
-
-.library-list {
-    max-height: 40vh;
-    overflow-y: auto;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-}
-
-.library-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-color);
-}
-.library-item:last-child {
-    border-bottom: none;
-}
-.library-item:hover {
-    background-color: var(--secondary-color);
-}
-.library-item.selected {
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: 500;
-}
-
-.library-item input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--primary-color);
-    pointer-events: none; /* Le clic est géré par la div parente */
-}
-
-
-/* ... (votre CSS existant) ... */
-
-/* --- STYLE POUR LE BOUTON CRÉER DANS LA BIBLIOTHÈQUE --- */
-.modal-content .button-group button.secondary {
-    border-color: var(--border-color);
-    color: var(--text-dark);
-}
-.modal-content .button-group button.secondary:hover {
-    background-color: var(--secondary-hover);
-    border-color: var(--secondary-hover);
-}
+.lightbox-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; animation: fadeIn 0.3s ease; }
+.lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; }
+.lightbox-image { max-width: 100%; max-height: 100%; display: block; border-radius: 8px; }
+.lightbox-close-button { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 28px; line-height: 40px; cursor: pointer; }
