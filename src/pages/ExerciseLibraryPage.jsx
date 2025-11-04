@@ -5,13 +5,15 @@ import ExerciseEditorModal from '../components/ExerciseEditorModal';
 import ConfirmModal from '../components/ConfirmModal';
 import { useNotification } from '../contexts/NotificationContext';
 
-const ExerciseLibraryPage = () => {
+// On reçoit 'isModalOpen' et 'setIsModalOpen' en props
+const ExerciseLibraryPage = ({ isModalOpen, setIsModalOpen }) => {
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const { addToast } = useNotification();
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    // On supprime l'état local
+    // const [isModalOpen, setIsModalOpen] = useState(false);
     const [itemToEdit, setItemToEdit] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -41,19 +43,17 @@ const ExerciseLibraryPage = () => {
 
     const handleOpenModalForNew = () => {
         setItemToEdit(null);
-        setIsModalOpen(true);
+        setIsModalOpen(true); // On utilise le setter des props
     };
 
     const handleOpenModalForEdit = (exercise) => {
         setItemToEdit(exercise);
-        setIsModalOpen(true);
+        setIsModalOpen(true); // On utilise le setter des props
     };
 
     const handleSaveExercise = async (exerciseData) => {
         const { data: { user } } = await supabase.auth.getUser();
         
-        // --- CORRECTION ICI ---
-        // On nettoie les données avant de les envoyer à Supabase
         const dataToSave = {
             name: exerciseData.name,
             type: exerciseData.type,
@@ -61,17 +61,14 @@ const ExerciseLibraryPage = () => {
             photo_url: exerciseData.photo_url || null,
             rest_time: exerciseData.rest_time || null,
             charge: exerciseData.charge || null,
-            // On s'assure que les champs numériques vides sont bien 'null'
             sets: exerciseData.sets || null,
             reps: exerciseData.reps || null,
             duration_minutes: exerciseData.duration_minutes || null,
             intensity: exerciseData.intensity || null,
-            // On ajoute les métadonnées
             coach_id: user.id,
             is_template: true,
             program_id: null,
         };
-        // --- FIN DE LA CORRECTION ---
 
         let error;
         if (itemToEdit) { // Mise à jour
@@ -108,6 +105,7 @@ const ExerciseLibraryPage = () => {
             <div className="screen">
                 <div className="page-header">
                     <h1>Bibliothèque</h1>
+                    {/* On utilise le setter des props */}
                     <button className="add-button" onClick={handleOpenModalForNew}>+</button>
                 </div>
                 <input 
@@ -141,6 +139,7 @@ const ExerciseLibraryPage = () => {
                 )}
             </div>
             
+            {/* On utilise la prop 'isModalOpen' pour l'affichage */}
             {isModalOpen && <ExerciseEditorModal exercise={itemToEdit} onClose={() => setIsModalOpen(false)} onSave={handleSaveExercise} />}
             {itemToDelete && <ConfirmModal title="Supprimer l'exercice" message={`Voulez-vous vraiment supprimer "${itemToDelete.name}" de votre bibliothèque ?`} onConfirm={handleDeleteExercise} onCancel={() => setItemToDelete(null)} />}
         </>

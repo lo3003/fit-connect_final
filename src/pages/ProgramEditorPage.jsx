@@ -9,6 +9,10 @@ import ConfirmModal from '../components/ConfirmModal';
 import ExerciseEditorModal from '../components/ExerciseEditorModal';
 import AddFromLibraryModal from '../components/AddFromLibraryModal';
 
+// 1. Importer le hook de taille d'écran et le nouveau panneau
+import useWindowSize from '../hooks/useWindowSize';
+import LibraryPanel from '../components/LibraryPanel';
+
 const DragHandleIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle>
@@ -62,11 +66,15 @@ const ProgramEditorPage = ({ programId, onBack }) => {
     const [isSaving, setIsSaving] = useState(false);
     
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
-    const [showLibraryModal, setShowLibraryModal] = useState(false);
+    const [showLibraryModal, setShowLibraryModal] = useState(false); // Pour la modale mobile
     const [itemToEdit, setItemToEdit] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isCreatingForLibrary, setIsCreatingForLibrary] = useState(false);
+
+    // 2. Utiliser le hook pour déterminer la version à afficher
+    const { width } = useWindowSize();
+    const isDesktop = width > 1024; // Mettre le breakpoint pour l'éditeur (ex: 1024px)
 
     const isNewProgram = programId === 'new';
 
@@ -146,6 +154,17 @@ const ProgramEditorPage = ({ programId, onBack }) => {
         setItems(currentItems => [...currentItems, newItemForProgram]);
     };
     
+    // 3. Fonction pour ajouter depuis le PANNEAU PC (un seul exercice)
+    const handleAddExerciseFromPanel = (exercise) => {
+        const newItem = {
+            ...exercise,
+            id: `temp-${Date.now()}-${Math.random()}`,
+            is_template: false,
+        };
+        setItems([...items, newItem]);
+    };
+
+    // 4. Fonction pour ajouter depuis la MODALE MOBILE (plusieurs exercices)
     const handleAddExercisesFromLibrary = (exercisesToAdd) => {
         const newItems = exercisesToAdd.map(template => ({
             ...template,
@@ -243,47 +262,69 @@ const ProgramEditorPage = ({ programId, onBack }) => {
 
     return (
         <>
-            <div className="screen">
-                <a href="#" className="back-link" onClick={onBack}>← Retour aux programmes</a>
-                <div className="program-form-group">
-                    <h2>{isNewProgram ? "Nouveau Programme" : "Modifier le Programme"}</h2>
-                    <input name="name" value={program.name} onChange={(e) => setProgram({ ...program, name: e.target.value })} placeholder="Nom du programme" />
-                </div>
-                <div className="page-header" style={{ marginTop: '20px', marginBottom: '16px' }}>
-                    <h3>Contenu de la séance</h3>
-                </div>
+            {/* 5. Utiliser la classe 'desktop' ou 'mobile' pour le layout */}
+            <div className={`program-editor-layout ${isDesktop ? 'desktop' : 'mobile'}`}>
                 
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                        <div className="exercise-list editor">
-                            {items.map(item => (
-                                <SortableItem key={item.id} item={item} onEdit={handleOpenModalForEdit} onDelete={setItemToDelete} />
-                            ))}
+                {/* --- PANNEAU PRINCIPAL DE L'ÉDITEUR --- */}
+                <div className="editor-main-panel">
+                    <div className="screen">
+                        <a href="#" className="back-link" onClick={onBack}>← Retour aux programmes</a>
+                        <div className="program-form-group">
+                            <h2>{isNewProgram ? "Nouveau Programme" : "Modifier le Programme"}</h2>
+                            <input name="name" value={program.name} onChange={(e) => setProgram({ ...program, name: e.target.value })} placeholder="Nom du programme" />
                         </div>
-                    </SortableContext>
-                </DndContext>
-                
-                {items.length === 0 && (
-                    <div className="empty-state" style={{margin: '20px 0'}}>
-                        <p>Commencez par ajouter une section ou un exercice.</p>
-                    </div>
-                )}
+                        <div className="page-header" style={{ marginTop: '20px', marginBottom: '16px' }}>
+                            <h3>Contenu de la séance</h3>
+                        </div>
+                        
+                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                            <SortableContext items={items} strategy={verticalListSortingStrategy}>
+                                <div className="exercise-list editor">
+                                    {items.map(item => (
+                                        <SortableItem key={item.id} item={item} onEdit={handleOpenModalForEdit} onDelete={setItemToDelete} />
+                                    ))}
+                                </div>
+                            </SortableContext>
+                        </DndContext>
+                        
+                        {items.length === 0 && (
+                            <div className="empty-state" style={{margin: '20px 0'}}>
+                                <p>{isDesktop ? "Commencez par ajouter une section ou glissez un exercice depuis la bibliothèque." : "Commencez par ajouter une section ou un exercice."}</p>
+                            </div>
+                        )}
 
-                <div className="button-group" style={{ marginTop: '24px' }}>
-                    <div className="form-row">
-                        <button className="secondary" onClick={handleAddSection}>+ Ajouter une section</button>
-                        <button className="secondary" onClick={() => setShowLibraryModal(true)}>+ Ajouter un exercice</button>
+                        <div className="button-group" style={{ marginTop: '24px' }}>
+                            <div className="form-row">
+                                <button className="secondary" onClick={handleAddSection}>+ Ajouter une section</button>
+                                
+                                {/* 6. Afficher ce bouton SEULEMENT sur mobile */}
+                                {!isDesktop && (
+                                    <button className="secondary" onClick={() => setShowLibraryModal(true)}>+ Ajouter un exercice</button>
+                                )}
+                            </div>
+                            <button onClick={handleSaveProgram} disabled={isSaving}>
+                                {isSaving ? 'Sauvegarde...' : 'Sauvegarder le programme'}
+                            </button>
+                            {!isNewProgram && (
+                                <button className="danger" onClick={() => setShowDeleteConfirm(true)} disabled={isSaving}>
+                                    Supprimer le programme
+                                </button>
+                            )}
+                        </div>
                     </div>
-                    <button onClick={handleSaveProgram} disabled={isSaving}>
-                        {isSaving ? 'Sauvegarde...' : 'Sauvegarder le programme'}
-                    </button>
-                    {!isNewProgram && (
-                        <button className="danger" onClick={() => setShowDeleteConfirm(true)} disabled={isSaving}>
-                            Supprimer le programme
-                        </button>
-                    )}
                 </div>
+
+                {/* 7. Afficher le panneau latéral SEULEMENT sur PC */}
+                {isDesktop && (
+                    <LibraryPanel 
+                        onAddExercise={handleAddExerciseFromPanel} 
+                    />
+                )}
             </div>
+            
+            {/* --- MODALES --- */}
+            
+            {/* La modale d'ÉDITION est utilisée par les deux versions */}
             {isExerciseModalOpen && (
                 <ExerciseEditorModal 
                     exercise={itemToEdit} 
@@ -291,13 +332,17 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                     onSave={isCreatingForLibrary ? handleSaveNewTemplateAndAdd : handleSaveItem} 
                 />
             )}
-            {showLibraryModal && (
+            
+            {/* La modale d'AJOUT n'est utilisée que sur mobile */}
+            {!isDesktop && showLibraryModal && (
                 <AddFromLibraryModal 
                     onClose={() => setShowLibraryModal(false)} 
                     onAddExercises={handleAddExercisesFromLibrary}
                     onLaunchCreator={handleLaunchCreatorFromLibrary}
                 />
             )}
+            
+            {/* Les modales de confirmation sont utilisées par les deux */}
             {itemToDelete && <ConfirmModal title="Supprimer l'élément" message={`Voulez-vous vraiment supprimer "${itemToDelete.name}" ?`} onConfirm={handleDeleteItem} onCancel={() => setItemToDelete(null)} />}
             {showDeleteConfirm && (
                 <ConfirmModal title="Supprimer le Programme" message={`Êtes-vous sûr de vouloir supprimer "${program.name}" ? Ses exercices et ses assignations aux clients seront aussi supprimés. Cette action est irréversible.`} onConfirm={handleDeleteProgram} onCancel={() => setShowDeleteConfirm(false)} confirmText="Oui, supprimer" />

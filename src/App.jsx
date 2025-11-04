@@ -2,25 +2,28 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './services/supabaseClient';
 import { NotificationProvider } from './contexts/NotificationContext';
+import useWindowSize from './hooks/useWindowSize'; // 1. Importer le hook
 
 import HomePage from './pages/HomePage';
 import CoachAuthPage from './pages/CoachAuthPage';
-import ClientLoginPage from './pages/ClientLoginPage'; // On importe la nouvelle page
+import ClientLoginPage from './pages/ClientLoginPage';
 import CoachDashboardPage from './pages/CoachDashboardPage';
-import ClientDashboardPage from './pages/ClientDashboardPage'; // On importe la nouvelle page
+import ClientDashboardPage from './pages/ClientDashboardPage';
 
 function App() {
   const [coachSession, setCoachSession] = useState(null);
   const [clientSession, setClientSession] = useState(null);
-  const [view, setView] = useState('home'); // Pour la navigation publique
+  const [view, setView] = useState('home'); 
   const [loading, setLoading] = useState(true);
 
+  // 2. Utiliser le hook pour la taille de l'écran
+  const { width } = useWindowSize();
+  const isDesktop = width > 900; // Notre breakpoint PC
+
   useEffect(() => {
-    // 1. Vérifier la session du coach (sécurisée, via Supabase)
+    // ... (la logique useEffect reste la même) ...
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCoachSession(session);
-      
-      // 2. Si pas de coach, vérifier la session du client (simple, via localStorage)
       if (!session) {
         try {
           const storedClient = localStorage.getItem('fitconnect-client');
@@ -35,10 +38,8 @@ function App() {
       setLoading(false);
     });
 
-    // Écouteur pour les changements de session du coach
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCoachSession(session);
-      // Si un coach se connecte/déconnecte, on s'assure que la session client est nulle
       setClientSession(null);
       localStorage.removeItem('fitconnect-client');
     });
@@ -57,32 +58,42 @@ function App() {
     setView('home');
   };
 
-  const renderContent = () => {
-    if (loading) {
-      return <div className="loading-fullscreen">Chargement...</div>;
+  // 3. Déterminer le contenu ET la classe de layout
+  let content;
+  let layoutClass = 'layout-mobile-box'; // Par défaut: boîte mobile (pour Client, Auth, Accueil)
+
+  if (loading) {
+    content = <div className="loading-fullscreen">Chargement...</div>;
+  } else if (coachSession) {
+    content = <CoachDashboardPage />;
+    if (isDesktop) {
+      layoutClass = 'layout-coach-desktop'; // Layout sidebar pour Coach PC
     }
-    // Priorité aux sessions actives
-    if (coachSession) {
-      return <CoachDashboardPage />;
+  } else if (clientSession) {
+    content = <ClientDashboardPage client={clientSession} onLogout={handleClientLogout} />;
+    if (isDesktop) {
+      layoutClass = 'layout-client-desktop'; // Layout header pour Client PC
     }
-    if (clientSession) {
-      return <ClientDashboardPage client={clientSession} onLogout={handleClientLogout} />;
-    }
-    // Si aucune session, on affiche les pages publiques
+  } else {
+    // Pages publiques (Auth, Accueil)
     switch (view) {
       case 'coach-auth':
-        return <CoachAuthPage setView={setView} />;
+        content = <CoachAuthPage setView={setView} />;
+        break;
       case 'client-auth':
-        return <ClientLoginPage onLoginSuccess={handleClientLogin} setView={setView} />;
+        content = <ClientLoginPage onLoginSuccess={handleClientLogin} setView={setView} />;
+        break;
       default:
-        return <HomePage setView={setView} />;
+        content = <HomePage setView={setView} />;
     }
-  };
+    // layoutClass reste 'layout-mobile-box'
+  }
 
   return (
     <NotificationProvider>
-      <div className="app-container">
-        {renderContent()}
+      {/* 4. Appliquer la classe de layout dynamique au conteneur */}
+      <div className={`app-container ${layoutClass}`}>
+        {content}
       </div>
     </NotificationProvider>
   );

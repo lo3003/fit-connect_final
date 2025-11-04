@@ -41,14 +41,14 @@ const ClientProgramPage = ({ assignedPrograms, workoutLogs, loading, onSelectPro
             <h3>{assignment.programs.name}</h3>
             <span>{exerciseCount} exercices</span>
           </div>
-          <button className="start-workout-btn">Commencer</button>
+          {/* --- CORRECTION ICI --- */}
+          <button className="start-workout-btn">Démarrer</button>
         </div>
       );
     }
 
     return (
       <div className="program-card client clickable" onClick={() => onSelectProgram(assignment)}>
-        {/* --- CORRECTION ICI --- */}
         <div className={`program-icon ${primaryType.toLowerCase()}`}>
           {primaryType === 'Renforcement' ? '💪' : '❤️'}
         </div>
@@ -66,7 +66,7 @@ const ClientProgramPage = ({ assignedPrograms, workoutLogs, loading, onSelectPro
   };
 
   return (
-    <div className="screen client-dashboard">
+    <div className="screen">
       <div className="client-header">
         <h1>{welcomeMessage}</h1>
         <p className="subtitle">Prêt pour votre séance ?</p>

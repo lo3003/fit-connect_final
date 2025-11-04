@@ -1,14 +1,18 @@
 // src/pages/ClientsPage.jsx
-import React, { useState } from 'react';
+import React from 'react'; // On enlève useState
 import AddClientModal from '../components/AddClientModal';
 
-const ClientsPage = ({ clients, loading, onSelectClient, onClientAdded }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+// On reçoit 'isModalOpen' et 'setIsModalOpen' en props
+const ClientsPage = ({ clients, loading, onSelectClient, onClientAdded, isModalOpen, setIsModalOpen }) => {
+  
+  // On supprime l'état local
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="screen">
       <div className="page-header">
         <h1>Mes Clients</h1>
+        {/* On utilise le setter des props */}
         <button className="add-button" onClick={() => setIsModalOpen(true)}>+</button>
       </div>
 
@@ -32,6 +36,7 @@ const ClientsPage = ({ clients, loading, onSelectClient, onClientAdded }) => {
         </div>
       )}
       
+      {/* On utilise la prop 'isModalOpen' pour l'affichage */}
       {isModalOpen && <AddClientModal onClose={() => setIsModalOpen(false)} onClientAdded={onClientAdded} />}
     </div>
   );

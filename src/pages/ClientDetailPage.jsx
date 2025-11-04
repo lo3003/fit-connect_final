@@ -25,8 +25,6 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
 
   const fetchAssignedPrograms = useCallback(async () => {
     setLoading(true);
-    // --- CORRECTION ICI ---
-    // On ne demande plus la colonne 'type' qui n'existe plus sur la table 'programs'
     const { data } = await supabase.from('client_programs').select(`programs (id, name)`).eq('client_id', client.id);
     if (data) {
         setAssignedPrograms(data.filter(item => item.programs).map(item => item.programs));
@@ -67,69 +65,82 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
   };
 
   return (
-    <div className="screen">
-      <a href="#" className="back-link" onClick={onBack}>← Retour à la liste</a>
-      
-      <div className="detail-card">
-        <h2>{client.full_name}</h2>
-        <div className="client-code-wrapper" onClick={handleCopyCode} title="Copier le code">
-          <span>Code d'accès : <strong>{client.client_code}</strong></span>
-          <CopyIcon />
-        </div>
+    <>
+      <div className="screen">
+        <a href="#" className="back-link" onClick={onBack}>← Retour à la liste</a>
         
-        <div className="info-grid full" style={{marginTop: '24px'}}>
-          <div><span>Objectif</span><p>{client.main_goal || 'N/A'}</p></div>
-          <div><span>Niveau</span><p>{client.fitness_level || 'N/A'}</p></div>
-          <div><span>Poids initial</span><p>{client.initial_weight_kg ? `${client.initial_weight_kg} kg` : 'N/A'}</p></div>
-          <div><span>Taille</span><p>{client.height_cm ? `${client.height_cm} cm` : 'N/A'}</p></div>
-          <div><span>Âge</span><p>{client.age || 'N/A'}</p></div>
-          <div><span>Email</span><p>{client.email || 'N/A'}</p></div>
-          <div className="full-width"><span>Fréquence d'entraînement</span><p>{client.training_frequency || 'N/A'}</p></div>
-          <div className="full-width"><span>Passif Sportif</span><p>{client.sporting_past || 'N/A'}</p></div>
-          <div className="full-width"><span>Matériel à disposition</span><p>{client.available_equipment || 'N/A'}</p></div>
-          <div className="full-width"><span>Soucis Physiques</span><p>{client.physical_issues || 'N/A'}</p></div>
-        </div>
-      </div>
-      
-      <div className="button-group" style={{marginTop: '20px'}}>
-        <button className="secondary" onClick={() => onViewHistory(client)}>Voir l'historique d'activité</button>
-      </div>
-
-      <div className="page-header" style={{marginTop: '20px'}}>
-        <h3>Programmes Assignés</h3>
-        <button className="add-button" onClick={() => setShowAssignModal(true)}>+</button>
-      </div>
-
-      {loading && <p className="loading-text">Chargement...</p>}
-      {!loading && assignedPrograms.length === 0 && <div className="empty-state"><p>Aucun programme assigné.</p></div>}
-      {!loading && assignedPrograms.length > 0 && (
-        <div className="program-list">
-          {assignedPrograms.map(program => (
-            <div key={program.id} className="program-card">
-              {/* --- CORRECTION ICI --- */}
-              {/* On retire l'icône et on met un texte générique */}
-              <div className="program-info">
-                <h3>{program.name}</h3>
-                <p>Programme mixte</p>
+        {/* --- NOUVELLE STRUCTURE À 2 COLONNES --- */}
+        <div className="detail-layout">
+        
+          {/* --- COLONNE DE GAUCHE --- */}
+          <div className="detail-layout-left">
+            <div className="detail-card">
+              <h2>{client.full_name}</h2>
+              <div className="client-code-wrapper" onClick={handleCopyCode} title="Copier le code">
+                <span>Code d'accès : <strong>{client.client_code}</strong></span>
+                <CopyIcon />
               </div>
-              <button className="unassign-button" title="Retirer le programme" onClick={() => setProgramToUnassign(program)}>
-                &times;
-              </button>
+              
+              <div className="info-grid full" style={{marginTop: '24px'}}>
+                <div><span>Objectif</span><p>{client.main_goal || 'N/A'}</p></div>
+                <div><span>Niveau</span><p>{client.fitness_level || 'N/A'}</p></div>
+                <div><span>Poids initial</span><p>{client.initial_weight_kg ? `${client.initial_weight_kg} kg` : 'N/A'}</p></div>
+                <div><span>Taille</span><p>{client.height_cm ? `${client.height_cm} cm` : 'N/A'}</p></div>
+                <div><span>Âge</span><p>{client.age || 'N/A'}</p></div>
+                <div><span>Email</span><p>{client.email || 'N/A'}</p></div>
+                <div className="full-width"><span>Fréquence d'entraînement</span><p>{client.training_frequency || 'N/A'}</p></div>
+                <div className="full-width"><span>Passif Sportif</span><p>{client.sporting_past || 'N/A'}</p></div>
+                <div className="full-width"><span>Matériel à disposition</span><p>{client.available_equipment || 'N/A'}</p></div>
+                <div className="full-width"><span>Soucis Physiques</span><p>{client.physical_issues || 'N/A'}</p></div>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+            
+            <div className="button-group" style={{marginTop: '20px'}}>
+              <button className="secondary" onClick={() => onViewHistory(client)}>Voir l'historique d'activité</button>
+            </div>
 
-      <div className="button-group">
-        <button onClick={() => setShowEditModal(true)}>Modifier les informations</button>
-        <button className="danger" onClick={() => setShowDeleteConfirm(true)}>Supprimer le client</button>
+            <div className="button-group" style={{marginTop: '20px'}}>
+              <button onClick={() => setShowEditModal(true)}>Modifier les informations</button>
+              <button className="danger" onClick={() => setShowDeleteConfirm(true)}>Supprimer le client</button>
+            </div>
+          </div>
+          
+          {/* --- COLONNE DE DROITE --- */}
+          <div className="detail-layout-right">
+            <div className="page-header" style={{marginTop: '0px'}}>
+              <h3>Programmes Assignés</h3>
+              <button className="add-button" onClick={() => setShowAssignModal(true)}>+</button>
+            </div>
+
+            {loading && <p className="loading-text">Chargement...</p>}
+            {!loading && assignedPrograms.length === 0 && <div className="empty-state"><p>Aucun programme assigné.</p></div>}
+            {!loading && assignedPrograms.length > 0 && (
+              <div className="program-list">
+                {assignedPrograms.map(program => (
+                  <div key={program.id} className="program-card">
+                    <div className="program-info">
+                      <h3>{program.name}</h3>
+                      <p>Programme mixte</p>
+                    </div>
+                    <button className="unassign-button" title="Retirer le programme" onClick={() => setProgramToUnassign(program)}>
+                      &times;
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+        </div> {/* --- FIN .detail-layout --- */}
+        
       </div>
       
+      {/* Les modales restent à la fin, en dehors du layout */}
       {showEditModal && <EditClientModal client={client} onClose={() => setShowEditModal(false)} onClientUpdated={(uc) => { onClientAction(uc); fetchAssignedPrograms(); }} />}
       {showDeleteConfirm && <ConfirmModal title="Supprimer le client" message={`Êtes-vous sûr de vouloir supprimer ${client.full_name} ?`} onConfirm={handleDelete} onCancel={() => setShowDeleteConfirm(false)} />}
       {showAssignModal && <AssignProgramModal client={client} programs={programs} assignedProgramIds={assignedPrograms.map(p => p.id)} onClose={() => setShowAssignModal(false)} onProgramAssigned={fetchAssignedPrograms} />}
       {programToUnassign && <ConfirmModal title="Retirer le programme" message={`Retirer le programme "${programToUnassign.name}" de ce client ?`} onConfirm={handleUnassignProgram} onCancel={() => setProgramToUnassign(null)} confirmText="Oui, retirer" />}
-    </div>
+    </>
   );
 };
 

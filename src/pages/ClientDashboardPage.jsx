@@ -2,6 +2,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
 import ClientBottomNav from '../components/ClientBottomNav';
+import ClientHeaderNav from '../components/ClientHeaderNav'; // 1. Importer le Header
+import useWindowSize from '../hooks/useWindowSize'; // 2. Importer le hook
 import ClientProgramPage from './ClientProgramPage';
 import ClientProgramDetailPage from './ClientProgramDetailPage';
 
@@ -23,6 +25,9 @@ const ClientDashboardPage = ({ client, onLogout }) => {
   const [workoutLogs, setWorkoutLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+
+  const { width } = useWindowSize(); // 3. Utiliser le hook
+  const isDesktop = width > 900;
 
   const fetchClientData = useCallback(async () => {
     setLoading(true);
@@ -79,14 +84,18 @@ const ClientDashboardPage = ({ client, onLogout }) => {
     }
   };
 
+  // 4. La logique pour "montrer la nav" reste la même
   const showNav = !selectedAssignment;
 
   return (
-    <div className="dashboard-layout">
+    // 5. On retire les classes 'desktop'/'mobile' d'ici, App.jsx s'en charge
+    <div className="dashboard-layout"> 
+      {/* 6. Afficher le Header sur PC, le BottomNav sur Mobile */}
+      {showNav && isDesktop && <ClientHeaderNav activeView={activeView} setActiveView={setActiveView} />}
       <main className="dashboard-content">
         {renderActiveView()}
       </main>
-      {showNav && <ClientBottomNav activeView={activeView} setActiveView={setActiveView} />}
+      {showNav && !isDesktop && <ClientBottomNav activeView={activeView} setActiveView={setActiveView} />}
     </div>
   );
 };

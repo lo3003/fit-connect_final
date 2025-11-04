@@ -8,6 +8,7 @@ import ProgramsPage from './ProgramsPage';
 import ProgramEditorPage from './ProgramEditorPage';
 import ClientHistoryPage from './ClientHistoryPage';
 import ExerciseLibraryPage from './ExerciseLibraryPage';
+import useWindowSize from '../hooks/useWindowSize'; 
 
 const AccountPage = () => (
     <div className="screen">
@@ -29,9 +30,15 @@ const CoachDashboardPage = () => {
   const [historyClient, setHistoryClient] = useState(null);
   const [isCreatingProgram, setIsCreatingProgram] = useState(false);
 
+  const [isAddClientModalOpen, setIsAddClientModalOpen] = useState(false);
+  const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
+
   const [clients, setClients] = useState([]);
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { width } = useWindowSize(); 
+  const isDesktop = width > 900; 
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -78,7 +85,14 @@ const CoachDashboardPage = () => {
 
     switch (activeView) {
       case 'clients':
-        return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={fetchData} />;
+        return <ClientsPage 
+                  clients={clients} 
+                  loading={loading} 
+                  onSelectClient={setSelectedClient} 
+                  onClientAdded={fetchData} 
+                  isModalOpen={isAddClientModalOpen}
+                  setIsModalOpen={setIsAddClientModalOpen}
+                />;
       case 'programs':
         return <ProgramsPage
                     programs={programs}
@@ -87,18 +101,36 @@ const CoachDashboardPage = () => {
                     onNewProgram={() => setIsCreatingProgram(true)}
                 />;
       case 'library':
-        return <ExerciseLibraryPage />;
+        return <ExerciseLibraryPage 
+                  isModalOpen={isLibraryModalOpen}
+                  setIsModalOpen={setIsLibraryModalOpen}
+                />;
       case 'account':
         return <AccountPage />;
       default:
-        return <ClientsPage clients={clients} loading={loading} onSelectClient={setSelectedClient} onClientAdded={fetchData} />;
+        return <ClientsPage 
+                  clients={clients} 
+                  loading={loading} 
+                  onSelectClient={setSelectedClient} 
+                  onClientAdded={fetchData} 
+                  isModalOpen={isAddClientModalOpen}
+                  setIsModalOpen={setIsAddClientModalOpen}
+                />;
     }
   };
 
-  const showNav = !selectedClient && !selectedProgramId && !historyClient && !isCreatingProgram;
+  const showNav = isDesktop || (
+                  !selectedClient && 
+                  !selectedProgramId && 
+                  !historyClient && 
+                  !isCreatingProgram && 
+                  !isAddClientModalOpen &&
+                  !isLibraryModalOpen
+                );
 
   return (
-    <div className="dashboard-layout">
+    // --- MODIFICATION ICI : Ajout de la classe "coach-dashboard" ---
+    <div className={`dashboard-layout coach-dashboard ${isDesktop ? 'desktop' : 'mobile'}`}>
       <main className="dashboard-content">
         {renderActiveView()}
       </main>
