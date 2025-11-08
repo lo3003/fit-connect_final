@@ -1,27 +1,43 @@
-// src/components/ClientBottomNav.jsx
+// src/components/BottomNav.jsx
 import React from 'react';
 
-// Icônes simples
-const ProgramIcon = ({ active }) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#2ecc71' : 'none'} stroke={active ? 'none' : '#8j8d94'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-);
-const AccountIcon = ({ active }) => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#2ecc71' : 'none'} stroke={active ? 'none' : '#8j8d94'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+// --- Icônes existantes ---
+const PeopleIcon = ({ active }) => (<svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#28a745' : 'none'} stroke={active ? 'none' : '#64748b'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>);
+const ProgramIcon = ({ active }) => (<svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#28a745' : 'none'} stroke={active ? 'none' : '#64748b'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>);
+const LibraryIcon = ({ active }) => (<svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#28a745' : 'none'} stroke={active ? 'none' : '#64748b'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v15H6.5A2.5 2.5 0 0 1 4 14.5V4.5A2.5 2.5 0 0 1 6.5 2z"></path></svg>);
+const AccountIcon = ({ active }) => (<svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#28a745' : 'none'} stroke={active ? 'none' : '#64748b'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>);
+
+// --- NOUVELLE ICÔNE MAIL/MESSAGE ---
+const MailIcon = ({ active }) => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? '#28a745' : 'none'} stroke={active ? 'none' : '#64748b'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
 );
 
-const ClientBottomNav = ({ activeView, setActiveView }) => {
+const BottomNav = ({ activeView, setActiveView }) => {
   return (
     <nav className="bottom-nav">
-      <button onClick={() => setActiveView('program')} className={activeView === 'program' ? 'active' : ''}>
-        <ProgramIcon active={activeView === 'program'} />
-        <span>Mon Programme</span>
+      <button onClick={() => setActiveView('clients')} className={activeView === 'clients' ? 'active' : ''}>
+        <PeopleIcon active={activeView === 'clients'} />
+        <span>Clients</span>
+      </button>
+      <button onClick={() => setActiveView('programs')} className={activeView === 'programs' ? 'active' : ''}>
+        <ProgramIcon active={activeView === 'programs'} />
+        <span>Programmes</span>
+      </button>
+      {/* NOUVEL ONGLET MESSAGERIE */}
+      <button onClick={() => setActiveView('messages')} className={activeView === 'messages' ? 'active' : ''}>
+        <MailIcon active={activeView === 'messages'} />
+        <span>Messagerie</span>
+      </button>
+      <button onClick={() => setActiveView('library')} className={activeView === 'library' ? 'active' : ''}>
+        <LibraryIcon active={activeView === 'library'} />
+        <span>Biblio</span>
       </button>
       <button onClick={() => setActiveView('account')} className={activeView === 'account' ? 'active' : ''}>
         <AccountIcon active={activeView === 'account'} />
-        <span>Mon Compte</span>
+        <span>Compte</span>
       </button>
     </nav>
   );
 };
 
-export default ClientBottomNav;
+export default BottomNav;

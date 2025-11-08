@@ -2,10 +2,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
 import ClientBottomNav from '../components/ClientBottomNav';
-import ClientHeaderNav from '../components/ClientHeaderNav'; // 1. Importer le Header
-import useWindowSize from '../hooks/useWindowSize'; // 2. Importer le hook
+import ClientHeaderNav from '../components/ClientHeaderNav';
+import useWindowSize from '../hooks/useWindowSize';
 import ClientProgramPage from './ClientProgramPage';
 import ClientProgramDetailPage from './ClientProgramDetailPage';
+import ClientContactPage from './ClientContactPage'; // Import de la nouvelle page
 
 const ClientAccountPage = ({ client, onLogout }) => (
     <div className="screen">
@@ -26,7 +27,7 @@ const ClientDashboardPage = ({ client, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
 
-  const { width } = useWindowSize(); // 3. Utiliser le hook
+  const { width } = useWindowSize();
   const isDesktop = width > 900;
 
   const fetchClientData = useCallback(async () => {
@@ -37,12 +38,16 @@ const ClientDashboardPage = ({ client, onLogout }) => {
       .eq('client_id', client.id);
       
     if (programsData) {
-        // On filtre les assignations dont le programme a été supprimé
         const validPrograms = programsData.filter(assignment => assignment.programs);
         setAssignedPrograms(validPrograms);
     }
 
-    const { data: logsData } = await supabase.from('workout_logs').select('*').eq('client_id', client.id);
+    const { data: logsData } = await supabase
+        .from('workout_logs')
+        .select('*, programs(name)')
+        .eq('client_id', client.id)
+        .order('completed_at', { ascending: false });
+
     if (logsData) setWorkoutLogs(logsData);
     
     setLoading(false);
@@ -59,6 +64,7 @@ const ClientDashboardPage = ({ client, onLogout }) => {
                 client={client}
                 onBack={() => setSelectedAssignment(null)}
                 onWorkoutLogged={fetchClientData}
+                isDesktop={isDesktop}
               />;
     }
 
@@ -69,7 +75,13 @@ const ClientDashboardPage = ({ client, onLogout }) => {
                   assignedPrograms={assignedPrograms} 
                   workoutLogs={workoutLogs} 
                   loading={loading} 
-                  onSelectProgram={setSelectedAssignment} 
+                  onSelectProgram={setSelectedAssignment}
+                  isDesktop={isDesktop}
+               />;
+      case 'contact': // Nouveau cas pour afficher la page de contact
+        return <ClientContactPage 
+                  client={client} 
+                  isDesktop={isDesktop} 
                />;
       case 'account':
         return <ClientAccountPage client={client} onLogout={onLogout} />;
@@ -79,18 +91,16 @@ const ClientDashboardPage = ({ client, onLogout }) => {
                   assignedPrograms={assignedPrograms} 
                   workoutLogs={workoutLogs} 
                   loading={loading} 
-                  onSelectProgram={setSelectedAssignment} 
+                  onSelectProgram={setSelectedAssignment}
+                  isDesktop={isDesktop}
                />;
     }
   };
 
-  // 4. La logique pour "montrer la nav" reste la même
   const showNav = !selectedAssignment;
 
   return (
-    // 5. On retire les classes 'desktop'/'mobile' d'ici, App.jsx s'en charge
-    <div className="dashboard-layout"> 
-      {/* 6. Afficher le Header sur PC, le BottomNav sur Mobile */}
+    <div className="dashboard-layout client-dashboard">
       {showNav && isDesktop && <ClientHeaderNav activeView={activeView} setActiveView={setActiveView} />}
       <main className="dashboard-content">
         {renderActiveView()}

@@ -6,14 +6,14 @@ import ConfirmModal from '../components/ConfirmModal';
 import EditClientModal from '../components/EditClientModal';
 import AssignProgramModal from '../components/AssignProgramModal';
 
-const CopyIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-  </svg>
-);
+// --- ICÔNES ---
+const CopyIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>);
+const MsgIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>);
+const HistoryIcon = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>);
+const EditIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>);
+const TrashIcon = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>);
 
-const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHistory }) => {
+const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHistory, onOpenChat }) => {
   const { addToast } = useNotification();
   const [assignedPrograms, setAssignedPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +52,7 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
         if (error) throw error;
         addToast('success', `Le programme a été retiré.`);
         setProgramToUnassign(null);
-        fetchAssignedPrograms(); // Rafraîchit la liste
+        fetchAssignedPrograms();
     } catch (error) {
         addToast('error', error.message);
         setProgramToUnassign(null);
@@ -69,10 +69,7 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
       <div className="screen">
         <a href="#" className="back-link" onClick={onBack}>← Retour à la liste</a>
         
-        {/* --- NOUVELLE STRUCTURE À 2 COLONNES --- */}
         <div className="detail-layout">
-        
-          {/* --- COLONNE DE GAUCHE --- */}
           <div className="detail-layout-left">
             <div className="detail-card">
               <h2>{client.full_name}</h2>
@@ -95,17 +92,32 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
               </div>
             </div>
             
-            <div className="button-group" style={{marginTop: '20px'}}>
-              <button className="secondary" onClick={() => onViewHistory(client)}>Voir l'historique d'activité</button>
+            {/* --- ACTIONS PRINCIPALES (Message / Historique) --- */}
+            <div className="button-group" style={{marginTop: '24px'}}>
+                <div className="button-row main-actions">
+                  <button onClick={() => onOpenChat(client)}>
+                      <MsgIcon /> Message
+                  </button>
+                  <button className="secondary" onClick={() => onViewHistory(client)}>
+                      <HistoryIcon /> Historique
+                  </button>
+                </div>
             </div>
 
-            <div className="button-group" style={{marginTop: '20px'}}>
-              <button onClick={() => setShowEditModal(true)}>Modifier les informations</button>
-              <button className="danger" onClick={() => setShowDeleteConfirm(true)}>Supprimer le client</button>
+            {/* --- ACTIONS SECONDAIRES (Admin) --- */}
+            <div className="button-group" style={{marginTop: '16px'}}>
+               <div className="button-row admin-actions">
+                  <button className="tertiary" onClick={() => setShowEditModal(true)}>
+                      <EditIcon /> Modifier infos
+                  </button>
+                  <button className="tertiary danger" onClick={() => setShowDeleteConfirm(true)}>
+                      <TrashIcon /> Supprimer
+                  </button>
+               </div>
             </div>
+
           </div>
           
-          {/* --- COLONNE DE DROITE --- */}
           <div className="detail-layout-right">
             <div className="page-header" style={{marginTop: '0px'}}>
               <h3>Programmes Assignés</h3>
@@ -130,12 +142,9 @@ const ClientDetailPage = ({ client, programs, onBack, onClientAction, onViewHist
               </div>
             )}
           </div>
-          
-        </div> {/* --- FIN .detail-layout --- */}
-        
+        </div>
       </div>
       
-      {/* Les modales restent à la fin, en dehors du layout */}
       {showEditModal && <EditClientModal client={client} onClose={() => setShowEditModal(false)} onClientUpdated={(uc) => { onClientAction(uc); fetchAssignedPrograms(); }} />}
       {showDeleteConfirm && <ConfirmModal title="Supprimer le client" message={`Êtes-vous sûr de vouloir supprimer ${client.full_name} ?`} onConfirm={handleDelete} onCancel={() => setShowDeleteConfirm(false)} />}
       {showAssignModal && <AssignProgramModal client={client} programs={programs} assignedProgramIds={assignedPrograms.map(p => p.id)} onClose={() => setShowAssignModal(false)} onProgramAssigned={fetchAssignedPrograms} />}

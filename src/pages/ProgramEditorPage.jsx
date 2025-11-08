@@ -5,13 +5,16 @@ import { useNotification } from '../contexts/NotificationContext';
 import { DndContext, closestCenter, PointerSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+
+// Composants
 import ConfirmModal from '../components/ConfirmModal';
 import ExerciseEditorModal from '../components/ExerciseEditorModal';
 import AddFromLibraryModal from '../components/AddFromLibraryModal';
-
-// 1. Importer le hook de taille d'écran et le nouveau panneau
-import useWindowSize from '../hooks/useWindowSize';
 import LibraryPanel from '../components/LibraryPanel';
+import AddSectionModal from '../components/AddSectionModal';
+
+// Hooks
+import useWindowSize from '../hooks/useWindowSize';
 
 const DragHandleIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -58,28 +61,39 @@ const SortableItem = ({ item, onEdit, onDelete }) => {
 };
 
 
-const ProgramEditorPage = ({ programId, onBack }) => {
+const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
     const { addToast } = useNotification();
     const [program, setProgram] = useState({ name: '' });
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     
+    // États des modales
     const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
-    const [showLibraryModal, setShowLibraryModal] = useState(false); // Pour la modale mobile
+    const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
+    const [showLibraryModal, setShowLibraryModal] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    
+    // États des éléments en cours d'édition/suppression
     const [itemToEdit, setItemToEdit] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isCreatingForLibrary, setIsCreatingForLibrary] = useState(false);
 
-    // 2. Utiliser le hook pour déterminer la version à afficher
     const { width } = useWindowSize();
-    const isDesktop = width > 1024; // Mettre le breakpoint pour l'éditeur (ex: 1024px)
+    const isDesktop = width > 1024; 
 
     const isNewProgram = programId === 'new';
 
+    // Fonction utilitaire pour signaler un changement non sauvegardé
+    const markAsDirty = useCallback(() => {
+        if (onDirtyChange) onDirtyChange(true);
+    }, [onDirtyChange]);
+
     const fetchProgramData = useCallback(async () => {
-        if (isNewProgram) { setLoading(false); return; }
+        if (isNewProgram) { 
+            setLoading(false);
+            return; 
+        }
         setLoading(true);
         const { data: programData } = await supabase.from('programs').select('*').eq('id', programId).single();
         if (programData) {
@@ -88,9 +102,13 @@ const ProgramEditorPage = ({ programId, onBack }) => {
             setItems(exercisesData || []);
         }
         setLoading(false);
-    }, [programId, isNewProgram]);
+        // Une fois chargé, ce n'est pas "dirty"
+        if (onDirtyChange) onDirtyChange(false);
+    }, [programId, isNewProgram, onDirtyChange]);
 
     useEffect(() => { fetchProgramData(); }, [fetchProgramData]);
+
+    // --- HANDLERS D'OUVERTURE DE MODALES ---
 
     const handleOpenModalForEdit = (item) => { 
         if (item.is_section_header) return;
@@ -106,12 +124,25 @@ const ProgramEditorPage = ({ programId, onBack }) => {
         setIsExerciseModalOpen(true);
     };
 
-    const handleAddSection = () => {
-        const sectionName = window.prompt("Nom de la nouvelle section (ex: Échauffement) :");
-        if (sectionName && sectionName.trim()) {
-            const newSection = { id: `temp-${Date.now()}`, name: sectionName.trim(), is_section_header: true };
-            setItems([...items, newSection]);
-        }
+    const handleOpenSectionModal = () => {
+        setIsSectionModalOpen(true);
+    };
+
+    // --- HANDLERS DE MODIFICATION (qui déclenchent markAsDirty) ---
+
+    const handleProgramNameChange = (e) => {
+        setProgram({ ...program, name: e.target.value });
+        markAsDirty();
+    };
+
+    const handleConfirmAddSection = (sectionName) => {
+        const newSection = { 
+            id: `temp-${Date.now()}`, 
+            name: sectionName, 
+            is_section_header: true 
+        };
+        setItems([...items, newSection]);
+        markAsDirty();
     };
 
     const handleSaveItem = (itemData) => {
@@ -120,6 +151,7 @@ const ProgramEditorPage = ({ programId, onBack }) => {
             const updatedItems = [...items];
             updatedItems[existingIndex] = itemData;
             setItems(updatedItems);
+            markAsDirty();
         }
     };
 
@@ -152,9 +184,9 @@ const ProgramEditorPage = ({ programId, onBack }) => {
     
         const newItemForProgram = { ...newTemplate, id: `temp-${Date.now()}`, is_template: false };
         setItems(currentItems => [...currentItems, newItemForProgram]);
+        markAsDirty();
     };
     
-    // 3. Fonction pour ajouter depuis le PANNEAU PC (un seul exercice)
     const handleAddExerciseFromPanel = (exercise) => {
         const newItem = {
             ...exercise,
@@ -162,9 +194,9 @@ const ProgramEditorPage = ({ programId, onBack }) => {
             is_template: false,
         };
         setItems([...items, newItem]);
+        markAsDirty();
     };
 
-    // 4. Fonction pour ajouter depuis la MODALE MOBILE (plusieurs exercices)
     const handleAddExercisesFromLibrary = (exercisesToAdd) => {
         const newItems = exercisesToAdd.map(template => ({
             ...template,
@@ -172,14 +204,17 @@ const ProgramEditorPage = ({ programId, onBack }) => {
             is_template: false,
         }));
         setItems([...items, ...newItems]);
+        markAsDirty();
     };
 
     const handleDeleteItem = () => {
         setItems(items.filter(i => i.id !== itemToDelete.id));
         setItemToDelete(null);
         addToast('success', "Élément supprimé de la liste.");
+        markAsDirty();
     };
     
+    // --- DRAG AND DROP ---
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(TouchSensor, {
@@ -198,8 +233,11 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                 const newIndex = currentItems.findIndex(item => item.id === over.id);
                 return arrayMove(currentItems, oldIndex, newIndex);
             });
+            markAsDirty();
         }
     };
+
+    // --- SAUVEGARDE & SUPPRESSION DU PROGRAMME ---
 
     const handleSaveProgram = async () => {
         setIsSaving(true);
@@ -211,6 +249,8 @@ const ProgramEditorPage = ({ programId, onBack }) => {
         try {
             const { data: { user } } = await supabase.auth.getUser();
             let savedProgram = program;
+            
+            // 1. Sauvegarde du programme lui-même
             if (isNewProgram) {
                 const { data, error } = await supabase.from('programs').insert({ name: program.name, coach_id: user.id }).select().single();
                 if (error) throw error;
@@ -220,21 +260,38 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                 if (error) throw error;
                 savedProgram = data;
             }
+
+            // 2. Sauvegarde des items (on efface tout et on recrée pour simplifier la gestion de l'ordre)
             await supabase.from('exercises').delete().eq('program_id', savedProgram.id);
+            
             if (items.length > 0) {
                 const itemsToInsert = items.map((item, index) => ({
-                    program_id: savedProgram.id, order: index, name: item.name, is_section_header: item.is_section_header || false,
-                    type: item.type || null, sets: item.sets || null, reps: item.reps || null,
-                    charge: item.charge || null, duration_minutes: item.duration_minutes || null,
-                    intensity: item.intensity || null, comment: item.comment || null,
-                    rest_time: item.rest_time || null, photo_url: item.photo_url || null,
-                    coach_id: user.id, is_template: false,
+                    program_id: savedProgram.id, 
+                    order: index, 
+                    name: item.name, 
+                    is_section_header: item.is_section_header || false,
+                    type: item.type || null, 
+                    sets: item.sets || null, 
+                    reps: item.reps || null,
+                    charge: item.charge || null, 
+                    duration_minutes: item.duration_minutes || null,
+                    intensity: item.intensity || null, 
+                    comment: item.comment || null,
+                    rest_time: item.rest_time || null, 
+                    photo_url: item.photo_url || null,
+                    coach_id: user.id, 
+                    is_template: false,
                 }));
                 const { error: itemsError } = await supabase.from('exercises').insert(itemsToInsert);
                 if (itemsError) throw itemsError;
             }
+
             addToast('success', `Programme "${savedProgram.name}" sauvegardé.`);
-            onBack();
+            
+            // On signale que c'est propre avant de quitter pour éviter la modale de confirmation
+            if (onDirtyChange) onDirtyChange(false);
+            onBack(true); // Force le retour
+
         } catch (error) {
             addToast('error', `Erreur de sauvegarde: ${error.message}`);
         } finally {
@@ -246,12 +303,15 @@ const ProgramEditorPage = ({ programId, onBack }) => {
         if (isNewProgram) return;
         setIsSaving(true);
         try {
+            // Suppression en cascade manuelle (si pas configurée en DB)
             await supabase.from('client_programs').delete().eq('program_id', programId);
             await supabase.from('exercises').delete().eq('program_id', programId);
             const { error } = await supabase.from('programs').delete().eq('id', programId);
+            
             if (error) throw error;
+            
             addToast('success', `Le programme "${program.name}" a été supprimé.`);
-            onBack();
+            onBack(true); // Force le retour
         } catch (error) {
             addToast('error', `Erreur lors de la suppression : ${error.message}`);
             setIsSaving(false);
@@ -262,17 +322,23 @@ const ProgramEditorPage = ({ programId, onBack }) => {
 
     return (
         <>
-            {/* 5. Utiliser la classe 'desktop' ou 'mobile' pour le layout */}
             <div className={`program-editor-layout ${isDesktop ? 'desktop' : 'mobile'}`}>
                 
                 {/* --- PANNEAU PRINCIPAL DE L'ÉDITEUR --- */}
                 <div className="editor-main-panel">
                     <div className="screen">
-                        <a href="#" className="back-link" onClick={onBack}>← Retour aux programmes</a>
+                        <a href="#" className="back-link" onClick={() => onBack()}>← Retour aux programmes</a>
+                        
                         <div className="program-form-group">
                             <h2>{isNewProgram ? "Nouveau Programme" : "Modifier le Programme"}</h2>
-                            <input name="name" value={program.name} onChange={(e) => setProgram({ ...program, name: e.target.value })} placeholder="Nom du programme" />
+                            <input 
+                                name="name" 
+                                value={program.name} 
+                                onChange={handleProgramNameChange} 
+                                placeholder="Nom du programme" 
+                            />
                         </div>
+
                         <div className="page-header" style={{ marginTop: '20px', marginBottom: '16px' }}>
                             <h3>Contenu de la séance</h3>
                         </div>
@@ -295,16 +361,18 @@ const ProgramEditorPage = ({ programId, onBack }) => {
 
                         <div className="button-group" style={{ marginTop: '24px' }}>
                             <div className="form-row">
-                                <button className="secondary" onClick={handleAddSection}>+ Ajouter une section</button>
+                                <button className="secondary" onClick={handleOpenSectionModal}>+ Ajouter une section</button>
                                 
-                                {/* 6. Afficher ce bouton SEULEMENT sur mobile */}
+                                {/* Sur mobile, on a besoin d'un bouton pour ouvrir la biblio */}
                                 {!isDesktop && (
                                     <button className="secondary" onClick={() => setShowLibraryModal(true)}>+ Ajouter un exercice</button>
                                 )}
                             </div>
+
                             <button onClick={handleSaveProgram} disabled={isSaving}>
                                 {isSaving ? 'Sauvegarde...' : 'Sauvegarder le programme'}
                             </button>
+
                             {!isNewProgram && (
                                 <button className="danger" onClick={() => setShowDeleteConfirm(true)} disabled={isSaving}>
                                     Supprimer le programme
@@ -314,7 +382,7 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                     </div>
                 </div>
 
-                {/* 7. Afficher le panneau latéral SEULEMENT sur PC */}
+                {/* --- PANNEAU LATÉRAL PC (Bibliothèque) --- */}
                 {isDesktop && (
                     <LibraryPanel 
                         onAddExercise={handleAddExerciseFromPanel} 
@@ -322,9 +390,9 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                 )}
             </div>
             
-            {/* --- MODALES --- */}
+            {/* --- TOUTES LES MODALES --- */}
             
-            {/* La modale d'ÉDITION est utilisée par les deux versions */}
+            {/* 1. Édition/Création d'exercice */}
             {isExerciseModalOpen && (
                 <ExerciseEditorModal 
                     exercise={itemToEdit} 
@@ -333,7 +401,15 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                 />
             )}
             
-            {/* La modale d'AJOUT n'est utilisée que sur mobile */}
+            {/* 2. Ajout de section (Nouvelle modale) */}
+            {isSectionModalOpen && (
+                <AddSectionModal
+                    onClose={() => setIsSectionModalOpen(false)}
+                    onConfirm={handleConfirmAddSection}
+                />
+            )}
+
+            {/* 3. Bibliothèque Mobile */}
             {!isDesktop && showLibraryModal && (
                 <AddFromLibraryModal 
                     onClose={() => setShowLibraryModal(false)} 
@@ -342,10 +418,23 @@ const ProgramEditorPage = ({ programId, onBack }) => {
                 />
             )}
             
-            {/* Les modales de confirmation sont utilisées par les deux */}
-            {itemToDelete && <ConfirmModal title="Supprimer l'élément" message={`Voulez-vous vraiment supprimer "${itemToDelete.name}" ?`} onConfirm={handleDeleteItem} onCancel={() => setItemToDelete(null)} />}
+            {/* 4. Confirmations */}
+            {itemToDelete && (
+                <ConfirmModal 
+                    title="Supprimer l'élément" 
+                    message={`Voulez-vous vraiment supprimer "${itemToDelete.name}" ?`} 
+                    onConfirm={handleDeleteItem} 
+                    onCancel={() => setItemToDelete(null)} 
+                />
+            )}
             {showDeleteConfirm && (
-                <ConfirmModal title="Supprimer le Programme" message={`Êtes-vous sûr de vouloir supprimer "${program.name}" ? Ses exercices et ses assignations aux clients seront aussi supprimés. Cette action est irréversible.`} onConfirm={handleDeleteProgram} onCancel={() => setShowDeleteConfirm(false)} confirmText="Oui, supprimer" />
+                <ConfirmModal 
+                    title="Supprimer le Programme" 
+                    message={`Êtes-vous sûr de vouloir supprimer "${program.name}" ? Ses exercices et ses assignations aux clients seront aussi supprimés. Cette action est irréversible.`} 
+                    onConfirm={handleDeleteProgram} 
+                    onCancel={() => setShowDeleteConfirm(false)} 
+                    confirmText="Oui, supprimer" 
+                />
             )}
         </>
     );

@@ -5,15 +5,12 @@ import ExerciseEditorModal from '../components/ExerciseEditorModal';
 import ConfirmModal from '../components/ConfirmModal';
 import { useNotification } from '../contexts/NotificationContext';
 
-// On reçoit 'isModalOpen' et 'setIsModalOpen' en props
 const ExerciseLibraryPage = ({ isModalOpen, setIsModalOpen }) => {
     const [exercises, setExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const { addToast } = useNotification();
 
-    // On supprime l'état local
-    // const [isModalOpen, setIsModalOpen] = useState(false);
     const [itemToEdit, setItemToEdit] = useState(null);
     const [itemToDelete, setItemToDelete] = useState(null);
 
@@ -43,12 +40,12 @@ const ExerciseLibraryPage = ({ isModalOpen, setIsModalOpen }) => {
 
     const handleOpenModalForNew = () => {
         setItemToEdit(null);
-        setIsModalOpen(true); // On utilise le setter des props
+        setIsModalOpen(true);
     };
 
     const handleOpenModalForEdit = (exercise) => {
         setItemToEdit(exercise);
-        setIsModalOpen(true); // On utilise le setter des props
+        setIsModalOpen(true);
     };
 
     const handleSaveExercise = async (exerciseData) => {
@@ -81,7 +78,7 @@ const ExerciseLibraryPage = ({ isModalOpen, setIsModalOpen }) => {
             addToast('error', `Erreur de sauvegarde: ${error.message}`);
         } else {
             addToast('success', `Exercice "${dataToSave.name}" sauvegardé.`);
-            fetchLibrary(); // Rafraîchir la liste
+            fetchLibrary();
         }
     };
 
@@ -105,7 +102,6 @@ const ExerciseLibraryPage = ({ isModalOpen, setIsModalOpen }) => {
             <div className="screen">
                 <div className="page-header">
                     <h1>Bibliothèque</h1>
-                    {/* On utilise le setter des props */}
                     <button className="add-button" onClick={handleOpenModalForNew}>+</button>
                 </div>
                 <input 
@@ -125,21 +121,39 @@ const ExerciseLibraryPage = ({ isModalOpen, setIsModalOpen }) => {
                 )}
                 
                 {!loading && (
-                    <div className="exercise-list editor">
+                    <div className="exercise-list library-grid">
                         {filteredExercises.map(exo => (
-                            <div key={exo.id} className="exercise-card editor" onClick={() => handleOpenModalForEdit(exo)}>
-                                <div className="exercise-card-main-content">
-                                    <div className={`exercise-type-icon ${exo.type?.toLowerCase()}`}>{exo.type === 'Renforcement' ? '💪' : '❤️'}</div>
-                                    <div className="exercise-card-info"><h3>{exo.name}</h3></div>
+                            <div key={exo.id} className="exercise-card library-item" onClick={() => handleOpenModalForEdit(exo)}>
+                                
+                                <div className={`exercise-type-badge ${exo.type?.toLowerCase()}`}>
+                                    {exo.type === 'Renforcement' ? 'Renfo' : 'Cardio'}
                                 </div>
-                                <button className="delete-icon" onClick={(e) => { e.stopPropagation(); setItemToDelete(exo); }}>🗑️</button>
+
+                                <div className="library-item-content">
+                                    <div className={`exercise-icon-large ${exo.type?.toLowerCase()}`}>
+                                        {exo.type === 'Renforcement' ? '💪' : '❤️'}
+                                    </div>
+                                    <h3>{exo.name}</h3>
+                                    <p className="library-item-details">
+                                        {exo.type === 'Renforcement' 
+                                            ? (exo.sets && exo.reps ? `${exo.sets} × ${exo.reps}` : 'Détails à définir') 
+                                            : `${exo.duration_minutes || '?'} min`}
+                                    </p>
+                                </div>
+
+                                <button 
+                                    className="delete-icon-library" 
+                                    onClick={(e) => { e.stopPropagation(); setItemToDelete(exo); }}
+                                    title="Supprimer"
+                                >
+                                    &times;
+                                </button>
                             </div>
                         ))}
                     </div>
                 )}
             </div>
             
-            {/* On utilise la prop 'isModalOpen' pour l'affichage */}
             {isModalOpen && <ExerciseEditorModal exercise={itemToEdit} onClose={() => setIsModalOpen(false)} onSave={handleSaveExercise} />}
             {itemToDelete && <ConfirmModal title="Supprimer l'exercice" message={`Voulez-vous vraiment supprimer "${itemToDelete.name}" de votre bibliothèque ?`} onConfirm={handleDeleteExercise} onCancel={() => setItemToDelete(null)} />}
         </>

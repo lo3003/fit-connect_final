@@ -405,12 +405,22 @@ textarea {
 .featured-program-info h3 { color: white; font-size: 22px; font-weight: 600; margin: 4px 0; text-align: left; }
 .featured-program-info span { font-size: 14px; color: rgba(255, 255, 255, 0.9); }
 .start-workout-btn {
-  background-color: rgba(255, 255, 255, 0.2); color: white; border-radius: 50%;
-  width: 70px; height: 70px; padding: 0; font-weight: 600; flex-shrink: 0;
-  border: 2px solid white; font-size: 16px; 
-  line-height: 1.2; /* Permet au texte de passer à la ligne */
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  padding: 0;
+  font-weight: 600;
+  flex-shrink: 0;
+  border: 2px solid white;
+  /* MODIFICATION ICI : Taille de police réduite */
+  font-size: 13px; 
+  line-height: 1.2;
   text-align: center;
-  /* padding-top: 2px; */ /* On enlève ce padding qui gène */
+  display: flex;             /* Assure le centrage vertical et horizontal */
+  align-items: center;       /* Assure le centrage vertical et horizontal */
+  justify-content: center;   /* Assure le centrage vertical et horizontal */
 }
 .other-programs-title { font-size: 20px; font-weight: 600; margin-bottom: 16px; text-align: left; }
 
@@ -522,6 +532,93 @@ textarea {
 .lightbox-content { position: relative; max-width: 90vw; max-height: 90vh; }
 .lightbox-image { max-width: 100%; max-height: 100%; display: block; border-radius: 8px; }
 .lightbox-close-button { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 28px; line-height: 40px; cursor: pointer; }
+
+/* src/index.css */
+
+/* ... autres styles (vers la ligne 460 environ, avant les media queries) ... */
+
+/* --- STYLES SPÉCIFIQUES MODALE FEEDBACK --- */
+.feedback-question {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.rating-selector {
+    display: flex;
+    justify-content: space-around; /* Espacement égal entre les emojis */
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding: 10px 0;
+}
+
+.rating-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0.6; /* Un peu transparent quand non sélectionné */
+    flex: 1;
+}
+
+.rating-option:hover {
+    opacity: 0.8;
+    transform: translateY(-3px);
+}
+
+.rating-option.selected {
+    opacity: 1;
+    transform: scale(1.1) translateY(-5px); /* Mise en avant de la sélection */
+}
+
+.rating-emoji {
+    font-size: 36px;
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.rating-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-light);
+    text-align: center;
+}
+.rating-option.selected .rating-label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.photo-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.2s ease;
+    font-weight: 500;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.photo-upload-label:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: var(--secondary-color);
+}
+
+/* ==============================================
+--- MEDIA QUERIES (DESKTOP STYLES) ---
+============================================== */
+/* ... la suite du fichier ... */
+
+
 
 /* --- PANNEAU BIBLIOTHÈQUE (POUR ÉDITEUR PC) --- */
 .library-panel-component {
@@ -772,6 +869,77 @@ textarea {
         max-width: 700px;
         margin: 0 auto;
     }
+
+    .client-header-nav {
+        background-color: var(--card-background);
+        border-bottom: 1px solid var(--border-color);
+        padding: 16px 0;
+        margin-bottom: 32px; /* Espace sous le header */
+    }
+
+    .client-header-nav-content {
+        max-width: 900px; /* On aligne avec la largeur du contenu client */
+        margin: 0 auto;
+        padding: 0 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .client-header-logo {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--primary-color);
+        /* Optionnel: si tu as un vrai logo image, ajuste ici */
+    }
+
+    .client-header-links {
+        display: flex;
+        align-items: center;
+        gap: 12px; /* Espace entre les boutons */
+    }
+
+    /* LE FIX EST ICI : On surcharge le style global des boutons */
+    .client-header-links button {
+        width: auto; /* Annule le width: 100% global */
+        background-color: transparent; /* Pas de fond vert par défaut */
+        color: var(--text-light);
+        border: none; /* Retire la bordure par défaut si présente */
+        padding: 10px 20px;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .client-header-links button:hover {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+    }
+
+    .client-header-links button.active {
+        background-color: var(--secondary-color);
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    .app-container.layout-mobile-box {
+        max-width: 450px;          /* Largeur max agréable pour un formulaire */
+        height: auto;              /* Laisser la hauteur s'adapter au contenu... */
+        min-height: 600px;         /* ...avec un minimum pour pas faire trop petit */
+        margin: 60px auto;         /* Centré horizontalement avec une marge en haut */
+        border-radius: 24px;       /* Des bords plus arrondis pour le style "carte" */
+        box-shadow: 0 20px 60px -15px rgba(0,0,0,0.15); /* Une belle ombre portée */
+        border: 1px solid var(--border-color); /* Légère bordure pour délimiter */
+        overflow: hidden;          /* Pour que rien ne dépasse des bords arrondis */
+    }
+    
+    /* On s'assure que le contenu à l'intérieur prend toute la hauteur de cette nouvelle boîte */
+    .app-container.layout-mobile-box .screen {
+        min-height: 600px;
+    }
+
+
 }
 
 
@@ -790,5 +958,681 @@ textarea {
     .coach-dashboard.desktop .editor-main-panel .screen {
         max-width: none;
         margin: 0;
+    }
+}
+
+
+/* --- CSS À AJOUTER À LA FIN DE src/index.css --- */
+
+/* ==============================================
+   CLIENT DESKTOP SPECIFIC STYLES
+   ============================================== */
+
+@media (min-width: 900px) {
+    /* --- GRID DASHBOARD --- */
+    .client-dashboard-grid {
+        display: flex; /* Flex est souvent plus simple que Grid pour 2 colonnes dont une fixe */
+        flex-direction: row;
+        gap: 40px;
+        align-items: flex-start;
+    }
+    .client-dashboard-grid .main-col {
+        flex: 2; /* Prend 2/3 de l'espace */
+        min-width: 0; /* Évite les overflow flex */
+    }
+    .client-dashboard-grid .side-col {
+        flex: 1; /* Prend 1/3 de l'espace */
+        min-width: 300px;
+        position: sticky;
+        top: 40px;
+    }
+
+    /* --- WIDGET HISTORIQUE --- */
+    .history-widget {
+        background-color: var(--card-background);
+        padding: 24px;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--box-shadow);
+    }
+    .history-widget h3 {
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+    .widget-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .widget-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .widget-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    .widget-info {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+    .widget-date {
+        font-size: 12px;
+        color: var(--text-light);
+    }
+    .widget-program {
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .widget-emoji {
+        font-size: 24px;
+    }
+    .empty-text {
+        text-align: center;
+        color: var(--text-light);
+        font-style: italic;
+    }
+
+    /* --- DASHBOARD PROGRAM GRID --- */
+    .program-grid-desktop {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    /* Ajustement de la carte programme en vue grille */
+    .program-grid-desktop .program-card.client {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+    }
+    .program-grid-desktop .program-card.client .program-status {
+        margin-left: 0;
+        margin-top: 16px;
+        align-self: flex-end;
+    }
+
+    /* --- WORKOUT PLAYLIST LAYOUT --- */
+    .desktop-playlist-layout {
+        display: flex;
+        flex-direction: row;
+        height: 100vh !important; /* Force la pleine hauteur */
+        max-width: 100% !important; /* Prend toute la largeur dispo */
+        border: none !important;
+    }
+    .workout-main-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+        border-right: 1px solid var(--border-color);
+    }
+    .workout-playlist-sidebar {
+        width: 320px;
+        background-color: var(--background-color);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    .workout-playlist-sidebar h3 {
+        padding: 24px;
+        margin: 0;
+        background-color: var(--card-background);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .playlist-items {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+    }
+    .playlist-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: 4px;
+    }
+    .playlist-item:hover {
+        background-color: var(--secondary-color);
+    }
+    .playlist-item.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    .playlist-item.completed .playlist-item-status {
+        color: var(--primary-color);
+        font-weight: bold;
+    }
+    .playlist-item.active .playlist-item-status {
+        color: white;
+    }
+    .playlist-item-status {
+        width: 24px;
+        text-align: center;
+        font-weight: 500;
+        color: var(--text-light);
+    }
+    .playlist-item-info {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+    .playlist-item-name {
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .playlist-item-details {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+
+    /* Ajustements zone principale workout desktop */
+    .workout-focus-content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .desktop-workout-header {
+        display: flex;
+        align-items: center;
+        padding: 16px 28px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .back-button-desktop {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        font-size: 14px;
+        cursor: pointer;
+        padding: 8px 16px 8px 0;
+        width: auto;
+        display: inline-block;
+    }
+    .back-button-desktop:hover {
+        color: var(--primary-color);
+    }
+    .desktop-workout-header h2 {
+        font-size: 18px;
+        margin-left: auto;
+        margin-right: auto;
+        transform: translateX(-50%); /* Petit hack pour centrer si besoin */
+    }
+    
+    /* Agrandir l'affichage de l'exercice sur Desktop */
+    .workout-focus-mode .current-exercise-display {
+        padding: 40px;
+    }
+    .workout-focus-mode .exercise-name {
+        font-size: 48px;
+    }
+    .workout-focus-mode .exercise-photo-container {
+        max-width: 400px;
+        height: 300px;
+    }
+    .exercise-comment {
+        font-size: 18px;
+        color: var(--text-light);
+        max-width: 600px;
+        margin: 16px auto !important;
+        background-color: var(--secondary-color);
+        padding: 12px 20px;
+        border-radius: 8px;
+    }
+    .detail-charge {
+        margin-top: 16px;
+        font-size: 18px;
+        color: var(--text-dark);
+    }
+}
+
+
+/* src/index.css */
+
+/* ... (à la fin du fichier) ... */
+
+/* ==============================================
+   NOUVEAU DESIGN BIBLIOTHÈQUE
+   ============================================== */
+
+/* --- Base (Mobile First) --- */
+.exercise-list.library-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 80px; /* Espace pour la nav mobile */
+}
+
+.exercise-card.library-item {
+    background-color: var(--card-background);
+    border-radius: 16px;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    position: relative; /* Pour positionner le bouton supprimer */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    overflow: hidden;
+}
+
+.exercise-card.library-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.exercise-type-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+.exercise-type-badge.renforcement {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+.exercise-type-badge.cardio {
+    background-color: #fdeded;
+    color: #e74c3c;
+}
+
+.library-item-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alignement à gauche pour mobile */
+    margin-top: 24px; /* Espace pour le badge au dessus */
+}
+
+.exercise-icon-large {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.exercise-card.library-item h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    text-align: left;
+    width: 100%;
+}
+
+.library-item-details {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.delete-icon-library {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+.delete-icon-library:hover {
+    background-color: var(--error-background);
+    color: var(--error-color);
+    border-color: var(--error-color);
+    opacity: 1;
+}
+
+/* --- Version Desktop (Grille) --- */
+@media (min-width: 900px) {
+    .exercise-list.library-grid {
+        display: grid;
+        /* Grille responsive : des colonnes d'au moins 220px */
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 24px;
+        padding-bottom: 24px;
+    }
+
+    .exercise-card.library-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        height: 100%; /* Pour que toutes les cartes aient la même hauteur */
+    }
+
+    .library-item-content {
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    /* Sur PC, on peut cacher le bouton supprimer par défaut et le montrer au survol */
+    .delete-icon-library {
+        opacity: 0;
+    }
+    .exercise-card.library-item:hover .delete-icon-library {
+        opacity: 1;
+    }
+}
+
+
+/* src/index.css */
+
+/* ... (à la fin du fichier) ... */
+
+/* --- SMART FOCUS STYLES --- */
+.priority-badge {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    backdrop-filter: blur(4px); /* Petit effet sympa si supporté */
+}
+
+
+.last-completed-date {
+    color: var(--text-light);
+    opacity: 0.8;
+    font-size: 13px;
+}
+
+/* Petit ajustement pour que la carte featured soit encore plus "héroïque" */
+.featured-program-card {
+    /* Augmenter un peu le padding pour donner de l'air au badge */
+    padding: 28px; 
+    align-items: flex-end; /* Aligne le bouton Démarrer en bas si le texte est long */
+}
+.featured-program-info {
+    flex: 1;
+}
+
+
+
+/* --- CSS CHAT & CONTACT --- */
+
+/* Page Contact Container */
+.client-contact-page {
+    padding: 0 !important; /* On veut utiliser tout l'espace */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--background-color);
+}
+
+.contact-header {
+    padding: 16px 20px;
+    background-color: var(--card-background);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0; /* Ne rétrécit pas */
+}
+.coach-info h2 { margin: 0; font-size: 18px; }
+.coach-status { margin: 0; font-size: 12px; color: var(--primary-color); font-weight: 500; }
+.appointment-btn { font-size: 12px !important; padding: 8px 12px !important; width: auto !important; }
+
+/* Chat Window & Messages */
+.chat-container-wrapper {
+    flex: 1;
+    overflow: hidden; /* Important pour que le scroll se fasse DANS ChatWindow */
+    position: relative;
+}
+
+.chat-window {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #f0f2f5; /* Légèrement différent du blanc pour le contraste */
+}
+
+.empty-chat-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    position: relative;
+    animation: fadeIn 0.2s ease;
+}
+.message-bubble.me {
+    align-self: flex-end;
+    background-color: var(--primary-color);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.message-bubble.them {
+    align-self: flex-start;
+    background-color: white;
+    color: var(--text-dark);
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.message-content {
+    white-space: pre-wrap;
+    word-break: break-word;
+    text-align: left; /* Force l'alignement à gauche pour le texte */
+}
+
+.message-time {
+    font-size: 10px;
+    margin-top: 4px;
+    opacity: 0.7;
+    text-align: right;
+}
+.message-bubble.me .message-time { color: rgba(255,255,255,0.9); }
+
+/* Chat Input Area */
+.chat-input-area {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: var(--card-background);
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.chat-input-area input {
+    flex: 1;
+    border-radius: 24px; /* Plus arrondi pour le chat */
+    padding-left: 20px;
+    background-color: var(--background-color);
+    border: none;
+}
+.chat-input-area input:focus {
+    box-shadow: none;
+    background-color: #e9eef4;
+}
+.chat-input-area button {
+    width: 44px !important;
+    height: 44px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chat-back-button {
+    background: none !important;
+    border: none !important;
+    color: var(--text-dark) !important;
+    padding: 8px !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    margin-left: -8px; /* Petit ajustement pour l'aligner optiquement à gauche */
+}
+.chat-back-button:hover {
+    background-color: var(--secondary-color) !important;
+    color: var(--primary-color) !important;
+}
+
+/* Ajustement Desktop pour le chat */
+@media (min-width: 900px) {
+    .client-contact-page.desktop {
+        max-width: 900px;
+        margin: 0 auto;
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+    }
+}
+
+/* src/index.css */
+
+/* ... */
+
+/* --- BANNIÈRE DE RDV (Coach) --- */
+.appointment-banner {
+    background-color: var(--secondary-color);
+    border-bottom: 1px solid var(--primary-color);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Pour les petits écrans */
+    gap: 12px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.banner-info p {
+    margin: 4px 0 0 0;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+.banner-info strong {
+    color: var(--primary-color);
+}
+.banner-notes {
+    display: block;
+    font-style: italic;
+    color: var(--text-light);
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.banner-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Petits boutons spécifiques pour la bannière */
+button.small {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    width: auto !important;
+}
+button.small.success {
+    background-color: var(--primary-color);
+    color: white;
+}
+button.small.danger-light {
+    background-color: white;
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+button.small.danger-light:hover {
+    background-color: var(--error-background);
+}
+
+
+/* src/index.css */
+
+/* ... */
+
+/* --- NOUVEAUX STYLES DE BOUTONS --- */
+
+/* Groupe de boutons qui peut passer en ligne */
+.button-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Style tertiaire (discret, pour l'admin) */
+button.tertiary {
+    background-color: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    padding: 10px 16px;
+}
+button.tertiary:hover {
+    background-color: var(--background-color);
+    border-color: var(--text-light);
+    color: var(--text-dark);
+}
+button.tertiary.danger {
+    color: var(--error-color);
+    border-color: transparent; /* Encore plus discret pour supprimer, pour éviter les clics accidentels */
+    background-color: #fff0f0;
+}
+button.tertiary.danger:hover {
+    background-color: var(--error-color);
+    color: white;
+    border-color: var(--error-color);
+}
+
+/* Sur Desktop, on met les boutons côte à côte */
+@media (min-width: 900px) {
+    .button-row {
+        flex-direction: row;
+    }
+    .button-row button {
+        flex: 1; /* Les boutons prennent une largeur égale */
+    }
+    /* Pour les actions admin, on peut les garder plus petites si on veut */
+    .admin-actions button {
+        flex: 1;
     }
 }
