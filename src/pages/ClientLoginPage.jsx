@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
 import { useNotification } from '../contexts/NotificationContext';
+import PrivacyPolicyModal from '../components/PrivacyPolicyModal';
 
 const ClientLoginPage = ({ setView }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // 1. Nouvel état pour la confirmation
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const { addToast } = useNotification();
 
@@ -16,29 +18,27 @@ const ClientLoginPage = ({ setView }) => {
     e.preventDefault();
     setLoading(true);
 
-    // 2. Vérification de correspondance lors de l'inscription
-    if (isSignUp && password !== confirmPassword) {
-        addToast('error', "Les mots de passe ne correspondent pas.");
-        setLoading(false);
-        return;
+    if (isSignUp) {
+        if (password !== confirmPassword) {
+            addToast('error', "Les mots de passe ne correspondent pas.");
+            setLoading(false);
+            return;
+        }
+        if (!termsAccepted) {
+            addToast('error', "Veuillez accepter la politique de confidentialité.");
+            setLoading(false);
+            return;
+        }
     }
 
     try {
       if (isSignUp) {
-        // --- INSCRIPTION ---
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         addToast('success', 'Compte créé ! Vous pouvez vous connecter.');
         setIsSignUp(false);
       } else {
-        // --- CONNEXION ---
-        const { data: { user }, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { data: { user }, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
         if (user) {
@@ -51,7 +51,6 @@ const ClientLoginPage = ({ setView }) => {
           if (clientError || !clientData) {
             throw new Error("Aucun profil client associé à ce compte. Contactez votre coach.");
           }
-          // La redirection est gérée automatiquement par App.jsx grâce au listener onAuthStateChange
         }
       }
     } catch (error) {
@@ -78,14 +77,13 @@ const ClientLoginPage = ({ setView }) => {
         />
         <input
           type="password"
-          placeholder="Votre mot de passe (6+ caractères)"
+          placeholder="Votre mot de passe"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
         />
         
-        {/* 3. Champ de confirmation visible uniquement en mode inscription */}
         {isSignUp && (
             <input
               type="password"
@@ -95,6 +93,22 @@ const ClientLoginPage = ({ setView }) => {
               required
               minLength={6}
             />
+        )}
+
+        {isSignUp && (
+             <div className="form-options" style={{justifyContent: 'flex-start', marginBottom: '16px'}}>
+                <label className="checkbox-container" style={{fontSize: '13px', alignItems: 'flex-start'}}>
+                    <input 
+                        type="checkbox" 
+                        checked={termsAccepted} 
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        style={{marginTop: '3px'}}
+                    />
+                    <span>
+                        J'accepte la <a href="#" onClick={(e) => { e.preventDefault(); setShowPrivacyModal(true); }} style={{color: 'var(--primary-color)'}}>politique de confidentialité</a>.
+                    </span>
+                </label>
+            </div>
         )}
 
         <button type="submit" disabled={loading}>
@@ -107,12 +121,14 @@ const ClientLoginPage = ({ setView }) => {
         <a href="#" onClick={(e) => { 
             e.preventDefault(); 
             setIsSignUp(!isSignUp);
-            // On vide les erreurs ou les champs si on veut être propre
             setConfirmPassword(''); 
+            setTermsAccepted(false);
         }}>
           {isSignUp ? ' Se connecter' : ' Créer un mot de passe'}
         </a>
       </p>
+
+      {showPrivacyModal && <PrivacyPolicyModal onClose={() => setShowPrivacyModal(false)} />}
     </div>
   );
 };

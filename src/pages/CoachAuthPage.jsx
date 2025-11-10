@@ -1,12 +1,16 @@
+// src/pages/CoachAuthPage.jsx
 import React, { useState } from 'react';
 import { supabase } from '../services/supabaseClient';
+import PrivacyPolicyModal from '../components/PrivacyPolicyModal';
 
 const CoachAuthPage = ({ setView }) => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // Nouvel état pour la confirmation
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -15,20 +19,24 @@ const CoachAuthPage = ({ setView }) => {
     setLoading(true);
     setError(null);
 
-    // Vérification de la confirmation du mot de passe lors de l'inscription
-    if (!isLoginView && password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
-      setLoading(false);
-      return; // On arrête l'exécution ici
+    if (!isLoginView) {
+        if (password !== confirmPassword) {
+            setError("Les mots de passe ne correspondent pas.");
+            setLoading(false);
+            return;
+        }
+        if (!termsAccepted) {
+            setError("Veuillez accepter la politique de confidentialité pour continuer.");
+            setLoading(false);
+            return;
+        }
     }
 
     try {
       if (isLoginView) {
-        // Logique de Connexion
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        // Logique d'Inscription
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         
@@ -39,7 +47,7 @@ const CoachAuthPage = ({ setView }) => {
           if (insertError) throw insertError;
           
           alert('Inscription réussie ! Veuillez consulter vos e-mails pour valider votre compte.');
-          setIsLoginView(true); // Redirige vers la vue de connexion
+          setIsLoginView(true);
         }
       }
     } catch (error) {
@@ -81,7 +89,6 @@ const CoachAuthPage = ({ setView }) => {
           minLength="6"
           required
         />
-        {/* Champ de confirmation ajouté ici */}
         {!isLoginView && (
           <input
             type="password"
@@ -92,7 +99,22 @@ const CoachAuthPage = ({ setView }) => {
           />
         )}
         
-        {/* Options du formulaire (case à cocher) ajoutées ici */}
+        {!isLoginView && (
+             <div className="form-options" style={{justifyContent: 'flex-start'}}>
+                <label className="checkbox-container" style={{fontSize: '13px', alignItems: 'flex-start'}}>
+                    <input 
+                        type="checkbox" 
+                        checked={termsAccepted} 
+                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                        style={{marginTop: '3px'}}
+                    />
+                    <span>
+                        J'accepte la <a href="#" onClick={(e) => { e.preventDefault(); setShowPrivacyModal(true); }} style={{color: 'var(--primary-color)'}}>politique de confidentialité</a>.
+                    </span>
+                </label>
+            </div>
+        )}
+
         {isLoginView && (
             <div className="form-options">
                 <label className="checkbox-container">
@@ -109,13 +131,17 @@ const CoachAuthPage = ({ setView }) => {
       </form>
       <p className="auth-toggle">
         {isLoginView ? 'Pas encore de compte ?' : 'Déjà un compte ?'}
-        <a href="#" onClick={() => {
+        <a href="#" onClick={(e) => {
+            e.preventDefault();
             setIsLoginView(!isLoginView);
-            setError(null); // Réinitialise les erreurs en changeant de vue
+            setError(null);
+            setConfirmPassword('');
         }}>
           {isLoginView ? " S'inscrire" : ' Se connecter'}
         </a>
       </p>
+
+      {showPrivacyModal && <PrivacyPolicyModal onClose={() => setShowPrivacyModal(false)} />}
     </div>
   );
 };
