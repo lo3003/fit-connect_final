@@ -10,7 +10,7 @@ const HomePage = ({ setView }) => {
     <div className="screen">
       <div className="content-centered">
         <Logo />
-        <h1>FitConnect</h1>
+        <h1>AltoFitness</h1>
         <p>L'application de coaching qui vous suit partout.</p>
       </div>
       <div className="button-group">
