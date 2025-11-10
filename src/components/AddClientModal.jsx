@@ -45,7 +45,7 @@ const AddClientModal = ({ onClose, onClientAdded }) => {
             <div className="modal-header"><h2>Nouveau Client</h2><button onClick={onClose} className="close-button">&times;</button></div>
             <form onSubmit={handleSubmit} className="modal-form">
                 <input name="full_name" value={formData.full_name} onChange={handleChange} placeholder="Nom complet" required />
-                <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Adresse e-mail (optionnel)" />
+                <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Adresse e-mail" required />
                 <div className="form-row">
                     <input name="initial_weight_kg" type="number" value={formData.initial_weight_kg} onChange={handleChange} placeholder="Poids (kg)" />
                     <input name="height_cm" type="number" value={formData.height_cm} onChange={handleChange} placeholder="Taille (cm)" />

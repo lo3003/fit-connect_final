@@ -442,7 +442,14 @@ textarea {
 
 .current-exercise-display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
 .exercise-name { font-size: 36px; font-weight: 700; text-align: center; margin: 0; line-height: 1.2; }
-.exercise-details { display: flex; align-items: center; gap: 20px; margin-top: 32px; }
+.exercise-details {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Ajout : centre les éléments si retour à la ligne */
+    gap: 20px;
+    margin-top: 32px;
+    flex-wrap: wrap; /* Ajout : autorise le retour à la ligne */
+}
 .detail-block { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 120px; }
 .detail-block span { font-size: 64px; font-weight: 700; color: var(--primary-color); line-height: 1; }
 .detail-block label { font-size: 16px; color: var(--text-light); margin-top: 8px; }

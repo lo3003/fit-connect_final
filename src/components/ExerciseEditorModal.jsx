@@ -34,14 +34,14 @@ const ExerciseEditorModal = ({ exercise, onClose, onSave }) => {
 
     setIsUploading(true);
     const fileName = `${Date.now()}_${photoFile.name}`;
-    const { error } = await supabase.storage.from('exercise-photos').upload(fileName, photoFile);
+    const { error } = await supabase.storage.from('exercices').upload(fileName, photoFile);
 
     if (error) {
         setIsUploading(false);
         throw new Error("Erreur lors de l'envoi de la photo.");
     }
     
-    const { data: { publicUrl } } = supabase.storage.from('exercise-photos').getPublicUrl(fileName);
+    const { data: { publicUrl } } = supabase.storage.from('exercices').getPublicUrl(fileName);
       
     setIsUploading(false);
     return publicUrl;
