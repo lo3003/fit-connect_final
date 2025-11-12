@@ -137,7 +137,7 @@ const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
 
     const handleConfirmAddSection = (sectionName) => {
         const newSection = { 
-            id: `temp-${Date.now()}`, 
+            id: crypto.randomUUID(), 
             name: sectionName, 
             is_section_header: true 
         };
@@ -182,7 +182,7 @@ const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
         
         addToast('success', `Exercice "${newTemplate.name}" ajouté à la bibliothèque.`);
     
-        const newItemForProgram = { ...newTemplate, id: `temp-${Date.now()}`, is_template: false };
+        const newItemForProgram = { ...newTemplate, id: crypto.randomUUID(), is_template: false };
         setItems(currentItems => [...currentItems, newItemForProgram]);
         markAsDirty();
     };
@@ -190,7 +190,7 @@ const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
     const handleAddExerciseFromPanel = (exercise) => {
         const newItem = {
             ...exercise,
-            id: `temp-${Date.now()}-${Math.random()}`,
+            id: crypto.randomUUID(),
             is_template: false,
         };
         setItems([...items, newItem]);
@@ -200,7 +200,7 @@ const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
     const handleAddExercisesFromLibrary = (exercisesToAdd) => {
         const newItems = exercisesToAdd.map(template => ({
             ...template,
-            id: `temp-${Date.now()}-${Math.random()}`,
+            id: crypto.randomUUID(),
             is_template: false,
         }));
         setItems([...items, ...newItems]);
@@ -367,6 +367,12 @@ const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
                                 {!isDesktop && (
                                     <button className="secondary" onClick={() => setShowLibraryModal(true)}>+ Ajouter un exercice</button>
                                 )}
+
+                                {/* --- CORRECTION ICI --- */}
+                                {/* On ajoute un bouton pour PC qui ouvre la modale, en plus du panneau latéral */}
+                                {isDesktop && (
+                                    <button className="secondary" onClick={() => setShowLibraryModal(true)}>Ajouter un exercice</button>
+                                )}
                             </div>
 
                             <button onClick={handleSaveProgram} disabled={isSaving}>
@@ -409,8 +415,8 @@ const ProgramEditorPage = ({ programId, onBack, onDirtyChange }) => {
                 />
             )}
 
-            {/* 3. Bibliothèque Mobile */}
-            {!isDesktop && showLibraryModal && (
+            {/* 3. Bibliothèque Mobile (ET MAINTENANT PC AUSSI) */}
+            {showLibraryModal && (
                 <AddFromLibraryModal 
                     onClose={() => setShowLibraryModal(false)} 
                     onAddExercises={handleAddExercisesFromLibrary}
